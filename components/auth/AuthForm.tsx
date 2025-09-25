@@ -1,3 +1,4 @@
+// components/auth/AuthForm.tsx
 'use client'
 
 import { useState } from 'react'
@@ -44,16 +45,28 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null)
 
     try {
-      const { error } = mode === 'login' 
-        ? await supabase.auth.signInWithPassword(data)
-        : await supabase.auth.signUp(data)
+      if (mode === 'login') {
+        const { data: loginData, error } = await supabase.auth.signInWithPassword(data)
+        
+        // --- Start Debugging Code ---
+        console.log('--- Client Login Attempt ---')
+        console.log('Login Data:', loginData)
+        console.log('Login Error:', error)
+        // --- End Debugging Code ---
 
-      if (error) {
-        setError(error.message)
-      } else if (mode === 'login') {
-        router.push('/dashboard')
+        if (error) {
+          setError(error.message)
+        } else {
+          router.push('/dashboard')
+          router.refresh() // Force a server-side data re-fetch
+        }
       } else {
-        setError('Please check your email to verify your account')
+        const { error } = await supabase.auth.signUp(data)
+        if (error) {
+          setError(error.message)
+        } else {
+          setError('Please check your email to verify your account')
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred')
