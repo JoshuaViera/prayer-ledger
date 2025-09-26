@@ -29,18 +29,16 @@ const priorityStyles: { [key: string]: string } = {
 interface PrayerCardProps {
   prayer: Prayer
   onUpdate?: () => void
+  onPrayerAnswered?: () => void
 }
 
-export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
+export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
   const router = useRouter()
 
   const refreshData = () => {
-    if (onUpdate) {
-      onUpdate()
-    } else {
-      router.refresh()
-    }
+    if (onUpdate) onUpdate()
+    else router.refresh()
   }
 
   const handleUpdateStatus = async () => {
@@ -52,7 +50,8 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
     if (error) {
       console.error('Error updating prayer status:', error)
     } else {
-      refreshData()
+      if (onPrayerAnswered) onPrayerAnswered()
+      else refreshData()
     }
   }
 
@@ -60,11 +59,8 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
     const isConfirmed = window.confirm('Are you sure you want to delete this prayer request?')
     if (isConfirmed) {
       const { error } = await supabase.from('prayers').delete().eq('id', prayer.id)
-      if (error) {
-        console.error('Error deleting prayer:', error)
-      } else {
-        refreshData()
-      }
+      if (error) { console.error('Error deleting prayer:', error) } 
+      else { refreshData() }
     }
   }
 
@@ -74,11 +70,8 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
       .update({ is_favorited: !prayer.is_favorited })
       .eq('id', prayer.id)
     
-    if (error) {
-      console.error('Error updating favorite status:', error)
-    } else {
-      refreshData()
-    }
+    if (error) { console.error('Error updating favorite status:', error) } 
+    else { refreshData() }
   }
 
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']

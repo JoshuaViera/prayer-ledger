@@ -5,6 +5,7 @@ import { PrayerCard } from '@/components/prayers/prayercard'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Database } from '@/lib/database.types'
 import { prayerCategories } from '@/lib/validations'
+import Confetti from 'react-confetti'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 const allCategories = ['All', ...prayerCategories]
@@ -12,6 +13,7 @@ const allCategories = ['All', ...prayerCategories]
 export default function ActivePrayersPage() {
   const [prayers, setPrayers] = useState<Prayer[]>([])
   const [activeFilter, setActiveFilter] = useState('All')
+  const [showConfetti, setShowConfetti] = useState(false)
   const supabase = createSupabaseBrowserClient()
 
   const fetchPrayers = useCallback(async () => {
@@ -31,6 +33,12 @@ export default function ActivePrayersPage() {
     fetchPrayers()
   }, [fetchPrayers])
 
+  const handlePrayerAnswered = () => {
+    setShowConfetti(true)
+    fetchPrayers()
+    setTimeout(() => setShowConfetti(false), 5000)
+  }
+
   const filteredPrayers =
     activeFilter === 'All'
       ? prayers
@@ -38,12 +46,12 @@ export default function ActivePrayersPage() {
 
   return (
     <div className="p-4 sm:p-8">
+      {showConfetti && <Confetti recycle={false} numberOfPieces={500} />}
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">All Prayers</h1>
           <p className="text-gray-600">Your complete prayer journal</p>
         </div>
-
         <div className="mb-8 overflow-x-auto pb-2">
           <div className="flex space-x-2">
             {allCategories.map((category) => (
@@ -61,14 +69,14 @@ export default function ActivePrayersPage() {
             ))}
           </div>
         </div>
-
         <div className="space-y-4">
           {filteredPrayers && filteredPrayers.length > 0 ? (
             filteredPrayers.map((prayer) => (
               <PrayerCard
                 key={prayer.id}
                 prayer={prayer}
-                onUpdate={fetchPrayers} // <-- Pass the refresh function here
+                onUpdate={fetchPrayers}
+                onPrayerAnswered={handlePrayerAnswered}
               />
             ))
           ) : (
