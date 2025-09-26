@@ -2,38 +2,28 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
-import { Award, BarChart, CheckCircle2, Flame, HeartHandshake, ShieldCheck, Target } from 'lucide-react'
+import { Award, BarChart, CheckCircle2, Flame, HeartHandshake, Lightbulb, ShieldCheck, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PrayerCard } from '@/components/prayers/prayercard'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
-// --- New: Define all possible achievements ---
+// --- New: A list of prayer prompts ---
+const prayerPrompts = [
+  "What are you most grateful for today?",
+  "Who is someone you can pray for this week?",
+  "What is a personal challenge where you need guidance?",
+  "How can you be a blessing to someone else today?",
+  "What is a fear you can release through prayer?",
+  "Reflect on a moment you felt close to God recently.",
+  "What area of your life needs healing or peace?"
+];
+
 const achievements = [
-  {
-    id: 'streak_7',
-    title: 'Week of Faith',
-    description: 'Maintained a 7-day prayer streak!',
-    icon: Flame,
-    isUnlocked: (stats: any) => stats.streak >= 7,
-  },
-  {
-    id: 'answered_1',
-    title: 'First Testimony',
-    description: 'You marked your first prayer as answered!',
-    icon: Award,
-    isUnlocked: (stats: any) => stats.answered >= 1,
-  },
-  {
-    id: 'answered_10',
-    title: 'Faithful Follower',
-    description: 'You have 10 answered prayers!',
-    icon: ShieldCheck,
-    isUnlocked: (stats: any) => stats.answered >= 10,
-  },
+  { id: 'streak_7', title: 'Week of Faith', description: 'Maintained a 7-day prayer streak!', icon: Flame, isUnlocked: (stats: any) => stats.streak >= 7 },
+  { id: 'answered_1', title: 'First Testimony', description: 'You marked your first prayer as answered!', icon: Award, isUnlocked: (stats: any) => stats.answered >= 1 },
+  { id: 'answered_10', title: 'Faithful Follower', description: 'You have 10 answered prayers!', icon: ShieldCheck, isUnlocked: (stats: any) => stats.answered >= 10 },
 ]
 
-// --- New: Function to check which achievements are unlocked ---
 function checkAchievements(stats: any) {
   return achievements.filter(ach => ach.isUnlocked(stats));
 }
@@ -57,7 +47,7 @@ function calculateStreak(prayers: Prayer[]) {
 
 function calculateStats(prayers: Prayer[]) {
   if (!prayers || prayers.length === 0) {
-    return { total: 0, answered: 0, active: 0, firstPrayerDate: null, journeyDays: 0 }
+    return { total: 0, answered: 0, active: 0, firstPrayerDate: null, journeyDays: 0, streak: 0 }
   }
   const answered = prayers.filter((p) => p.status === 'answered').length
   const active = prayers.length - answered
@@ -89,8 +79,11 @@ export default async function HomePage() {
 
   const { data: prayers } = await supabase.from('prayers').select('*').order('created_at', { ascending: false })
   const stats = calculateStats(prayers || [])
-  const answeredPrayers = (prayers || []).filter(p => p.status === 'answered');
-  const earnedAchievements = checkAchievements(stats); // Check for achievements
+  const earnedAchievements = checkAchievements(stats);
+
+  // --- New: Select a daily prompt ---
+  const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+  const dailyPrompt = prayerPrompts[dayOfYear % prayerPrompts.length];
 
   let verse = { text: 'For where two or three are gathered in my name, there am I among them.', reference: 'Matthew 18:20' }
   try {
@@ -115,7 +108,6 @@ export default async function HomePage() {
           <StatCard icon={<Flame size={28} />} title="Prayer Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
         </div>
         
-        {/* --- New: Achievements Section --- */}
         {earnedAchievements.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Achievements</h2>
@@ -135,7 +127,7 @@ export default async function HomePage() {
           </div>
         )}
 
-        <div className="bg-white p-6 rounded-lg shadow-card text-center">
+        <div className="bg-white p-6 rounded-lg shadow-card text-center mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">What would you like to do?</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="flex-1">
@@ -145,6 +137,15 @@ export default async function HomePage() {
               <Link href="/prayers/active">View All Prayers</Link>
             </Button>
           </div>
+        </div>
+        
+        {/* --- New: Prayer Prompt Section --- */}
+        <div className="bg-white p-6 rounded-lg shadow-card text-center">
+            <div className="flex justify-center items-center gap-2 text-primary">
+              <Lightbulb size={24} />
+              <h2 className="text-xl font-semibold">Daily Reflection</h2>
+            </div>
+            <p className="text-gray-600 my-4 italic">"{dailyPrompt}"</p>
         </div>
       </div>
     </div>
