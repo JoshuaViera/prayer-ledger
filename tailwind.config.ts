@@ -9,65 +9,63 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // New Modern Dark Palette
-        border: 'hsl(215 27.9% 16.9%)', // A subtle dark border
-        input: 'hsl(215 27.9% 16.9%)', // Input field borders/backgrounds
-        ring: 'hsl(217.2 91.2% 59.8%)', // Focus ring color (matches primary)
-
-        background: 'hsl(222.2 84% 4.9%)', // Main dark background
-        foreground: 'hsl(210 40% 98%)', // Main light text
-
+        // CSS variables approach for shadcn/ui compatibility
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(217.2 91.2% 59.8%)', // Vibrant Blue/Purple for main accents
-          foreground: 'hsl(222.2 47.4% 11.2%)', // Darker text on primary
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: 'hsl(217.2 32.6% 17.5%)', // Secondary dark background for elements
-          foreground: 'hsl(210 40% 98%)', // Light text on secondary
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
         muted: {
-          DEFAULT: 'hsl(215 27.9% 16.9%)', // Muted background for less prominent elements
-          foreground: 'hsl(217.2 32.6% 17.5%)', // Muted foreground text
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
-          DEFAULT: 'hsl(217.2 32.6% 17.5%)', // Accent color (can be subtle or vibrant depending on use)
-          foreground: 'hsl(210 40% 98%)', // Light text on accent
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
         },
         destructive: {
-          DEFAULT: 'hsl(0 62.8% 30.6%)', // Red for destructive actions
-          foreground: 'hsl(210 40% 98%)', // Light text on destructive
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
         },
         card: {
-          DEFAULT: 'hsl(217.2 32.6% 17.5%)', // Card background
-          foreground: 'hsl(210 40% 98%)', // Light text on card
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
         popover: {
-          DEFAULT: 'hsl(222.2 84% 4.9%)', // Popover background
-          foreground: 'hsl(210 40% 98%)', // Light text on popover
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
         },
-        // More specific dark grays and vibrant tones
+        // Keep your custom colors as-is since they work fine
         slate: {
-          950: '#020617', // Deeper than default slate-950
-          900: '#0F172A', // Our standard dark card background
+          950: '#020617',
+          900: '#0F172A',
           800: '#1e293b',
           700: '#334155',
-          50: '#f8fafc', // Lightest text
+          50: '#f8fafc',
         },
         zinc: {
           800: '#27272a',
           700: '#3f3f46',
         },
         purple: {
-          500: '#8b5cf6', // Example vibrant purple
+          500: '#8b5cf6',
         },
         blue: {
-          500: '#3b82f6', // Example vibrant blue
+          500: '#3b82f6',
         },
         green: {
-          500: '#22c55e', // Example vibrant green
+          500: '#22c55e',
         },
         amber: {
-          500: '#f59e0b', // Keep amber for answered prayers / gold accents
+          500: '#f59e0b',
         },
         rose: {
           500: '#f43f5e',
@@ -102,8 +100,8 @@ const config: Config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       boxShadow: {
-        'card': '0 4px 10px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)', // Stronger shadow for floating effect
-        'card-hover': '0 6px 15px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3)', // Even stronger on hover
+        'card': '0 4px 10px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)',
+        'card-hover': '0 6px 15px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3)',
       },
     },
   },

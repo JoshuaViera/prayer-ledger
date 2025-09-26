@@ -1,3 +1,4 @@
+// app/(main)/home/page.tsx
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -108,7 +109,7 @@ function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string
 }
 
 export default async function HomePage() {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient() // Added await here!
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) { redirect('/login') }
 

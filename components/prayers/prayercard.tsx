@@ -11,28 +11,31 @@ import { useState } from 'react'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
+// Updated category border colors for maximum visibility
 const categoryStyles: { [key: string]: string } = {
-  'Personal Growth': 'border-l-rose-500',
-  'Family & Relationships': 'border-l-teal-500',
-  'Health & Healing': 'border-l-green-500',
-  'Career & Finances': 'border-l-sky-500',
-  'World Events': 'border-l-violet-500',
-  'Church Community': 'border-l-amber-500',
-  'General': 'border-l-gray-400',
+  'Personal Growth': 'border-l-pink-400',        // Hot pink
+  'Family & Relationships': 'border-l-cyan-400',  // Bright cyan
+  'Health & Healing': 'border-l-emerald-400',     // Bright emerald
+  'Career & Finances': 'border-l-blue-400',       // Bright blue
+  'World Events': 'border-l-purple-400',          // Bright purple
+  'Church Community': 'border-l-yellow-400',      // Bright yellow
+  'General': 'border-l-orange-400',               // Bright orange
 }
 
+// Updated priority badge colors - much more distinct
 const priorityStyles: { [key: string]: string } = {
-  'High': 'bg-red-100 text-red-800',
-  'Medium': 'bg-yellow-100 text-yellow-800',
-  'Low': 'bg-gray-100 text-gray-800',
+  'High': 'bg-red-500 text-white shadow-lg',      // Bright red with shadow
+  'Medium': 'bg-yellow-500 text-black shadow-lg', // Bright yellow with black text
+  'Low': 'bg-green-500 text-white shadow-lg',     // Bright green with shadow
 }
 
 interface PrayerCardProps {
   prayer: Prayer
   onUpdate?: () => void
+  onPrayerAnswered?: () => void // Keep for confetti trigger
 }
 
-export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
+export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
   const router = useRouter()
   const [isCopied, setIsCopied] = useState(false)
@@ -58,16 +61,24 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
       .from('prayers')
       .update({ status: 'answered' })
       .eq('id', prayer.id)
-    if (error) { console.error('Error updating prayer status:', error) } 
-    else { refreshData() }
+    
+    if (error) {
+      console.error('Error updating prayer status:', error)
+    } else {
+      if (onPrayerAnswered) onPrayerAnswered()
+      else refreshData()
+    }
   }
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm('Are you sure you want to delete this prayer request?')
     if (isConfirmed) {
       const { error } = await supabase.from('prayers').delete().eq('id', prayer.id)
-      if (error) { console.error('Error deleting prayer:', error) } 
-      else { refreshData() }
+      if (error) {
+        console.error('Error deleting prayer:', error)
+      } else {
+        refreshData()
+      }
     }
   }
 
@@ -76,59 +87,69 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
       .from('prayers')
       .update({ is_favorited: !prayer.is_favorited })
       .eq('id', prayer.id)
-    if (error) { console.error('Error updating favorite status:', error) } 
-    else { refreshData() }
+    
+    if (error) {
+      console.error('Error updating favorite status:', error)
+    } else {
+      refreshData()
+    }
   }
 
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
   const priorityColorClass = priorityStyles[prayer.priority] || priorityStyles['Medium']
 
   return (
-    <Card className={cn('border-l-4 shadow-card', borderColorClass)}>
-      <CardHeader className="flex flex-row justify-between items-start">
+    // Card with much more distinct styling
+    <Card className={cn('border-2 border-border border-l-8 shadow-xl hover:shadow-2xl transition-all duration-300 bg-card backdrop-blur-sm', borderColorClass)}>
+      <CardHeader className="flex flex-row justify-between items-start bg-gradient-to-r from-card/50 to-secondary/30 rounded-t-lg">
         <div>
-          <CardTitle>{prayer.title}</CardTitle>
+          <CardTitle className="text-foreground text-xl font-bold drop-shadow-sm">{prayer.title}</CardTitle>
           {prayer.details && (
-            <p className="text-gray-600 text-sm mt-1">{prayer.details}</p>
+            <p className="text-card-foreground/80 text-sm mt-2 bg-muted/30 p-2 rounded">{prayer.details}</p>
           )}
         </div>
         <div className="flex flex-col items-end gap-2">
+          {/* Status badge colors - much brighter and more distinct */}
           <span
-            className={`px-2 py-1 text-xs font-semibold rounded-full ${
+            className={`px-3 py-1 text-xs font-bold rounded-full shadow-md ${
               prayer.status === 'active'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-amber-100 text-amber-800'
+                ? 'bg-blue-500 text-white border border-blue-300' // Bright blue for active
+                : 'bg-emerald-500 text-white border border-emerald-300' // Bright emerald for answered
             }`}
           >
             {prayer.status}
           </span>
-          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityColorClass}`}>
+          <span className={`px-3 py-1 text-xs font-bold rounded-full shadow-md ${priorityColorClass}`}>
             {prayer.priority} Priority
           </span>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="bg-card/80">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <Tag className="h-3 w-3" />
-            <span>{prayer.category}</span>
+          <div className="flex items-center gap-2 text-sm bg-accent/20 px-3 py-1 rounded-full">
+            <Tag className="h-4 w-4 text-accent-foreground" />
+            <span className="text-accent-foreground font-medium">{prayer.category}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleShare}>
+          <div className="flex items-center gap-3">
+            {/* Share Button - bright with distinct hover */}
+            <Button variant="ghost" size="icon" onClick={handleShare} className="hover:bg-cyan-500/20 text-cyan-400 hover:text-cyan-300 border border-transparent hover:border-cyan-500/50">
               {isCopied ? (
-                <Check className="h-4 w-4 text-green-500" />
+                <Check className="h-4 w-4 text-emerald-400" />
               ) : (
-                <Share2 className="h-4 w-4 text-gray-500" />
+                <Share2 className="h-4 w-4" />
               )}
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
-              <Star className={`h-5 w-5 text-yellow-500 ${prayer.is_favorited ? 'fill-current' : ''}`} />
+            {/* Favorite Button - gold/yellow theme */}
+            <Button variant="ghost" size="icon" onClick={handleToggleFavorite} className="hover:bg-yellow-500/20 text-yellow-400 hover:text-yellow-300 border border-transparent hover:border-yellow-500/50">
+              <Star className={cn("h-5 w-5", prayer.is_favorited ? 'fill-yellow-400 text-yellow-400' : 'text-yellow-400')} />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4 text-red-500" />
+            {/* Delete Button - red theme */}
+            <Button variant="ghost" size="icon" onClick={handleDelete} className="hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-transparent hover:border-red-500/50">
+              <Trash2 className="h-4 w-4" />
             </Button>
             {prayer.status === 'active' && (
-              <Button variant="outline" size="sm" onClick={handleUpdateStatus}>
+              // Mark as Answered Button - bright green theme
+              <Button variant="outline" size="sm" onClick={handleUpdateStatus} className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-black font-medium shadow-md">
                 Mark as Answered
               </Button>
             )}

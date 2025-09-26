@@ -1,15 +1,9 @@
-import './globals.css'
 import type { Metadata } from 'next'
-import { Poppins } from 'next/font/google'
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-})
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Prayer Ledger',
-  description: 'Your personal prayer journal and request tracker',
+  description: 'Your personal prayer tracking app',
 }
 
 export default function RootLayout({
@@ -19,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={poppins.className}>{children}</body>
+      <body>
+        {children}
+      </body>
     </html>
   )
 }

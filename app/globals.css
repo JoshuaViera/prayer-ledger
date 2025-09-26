@@ -3,20 +3,57 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Vibrant, distinct dark theme with different colors for everything */
+    --background: 240 10% 8%;        /* Very dark navy background */
+    --foreground: 0 0% 95%;          /* Bright white text */
+    
+    /* Cards - Dark purple/blue */
+    --card: 250 20% 15%;             /* Dark purple-blue cards */
+    --card-foreground: 0 0% 98%;     /* White text on cards */
+    
+    /* Popover - Different from cards */
+    --popover: 220 25% 12%;          /* Dark blue popover */
+    --popover-foreground: 0 0% 95%;  /* Light text */
+    
+    /* Primary - Bright blue */
+    --primary: 210 100% 65%;         /* Bright blue primary */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    
+    /* Secondary - Purple */
+    --secondary: 270 50% 40%;        /* Purple secondary */
+    --secondary-foreground: 0 0% 95%; /* Light text on secondary */
+    
+    /* Muted - Green tint */
+    --muted: 150 15% 20%;            /* Dark green-gray muted */
+    --muted-foreground: 150 10% 70%; /* Light green-gray text */
+    
+    /* Accent - Orange/amber */
+    --accent: 35 80% 50%;            /* Bright orange accent */
+    --accent-foreground: 0 0% 10%;   /* Dark text on bright accent */
+    
+    /* Destructive - Red */
+    --destructive: 0 85% 60%;        /* Bright red destructive */
+    --destructive-foreground: 0 0% 100%; /* White text on red */
+    
+    /* Borders - Cyan tint */
+    --border: 180 30% 25%;           /* Cyan-gray border */
+    --input: 200 30% 18%;            /* Blue-gray input background */
+    --ring: 210 100% 65%;            /* Bright blue focus ring */
+  }
+
   * {
     @apply border-border;
   }
+  
   body {
-    /* Use the new Tailwind CSS variables for background and text */
-    @apply bg-background text-foreground; 
+    @apply bg-background text-foreground;
   }
 }
 
 @layer components {
-  .bg-card {
-    /* Set the default card background to our new 'card' color */
-    @apply bg-card;
-  }
+  /* Removed the circular .bg-card class definition */
+  
   /* Optional: Add a subtle transition for smoother UI changes */
   .transition-colors {
     transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
