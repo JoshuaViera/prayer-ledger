@@ -6,6 +6,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Database } from '@/lib/database.types'
 import { prayerCategories } from '@/lib/validations'
 import Confetti from 'react-confetti'
+import { Input } from '@/components/ui/input' // Import the Input component
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 const allCategories = ['All', ...prayerCategories]
@@ -14,6 +15,7 @@ export default function ActivePrayersPage() {
   const [prayers, setPrayers] = useState<Prayer[]>([])
   const [activeFilter, setActiveFilter] = useState('All')
   const [showConfetti, setShowConfetti] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('') // New state for the search input
   const supabase = createSupabaseBrowserClient()
 
   const fetchPrayers = useCallback(async () => {
@@ -39,10 +41,22 @@ export default function ActivePrayersPage() {
     setTimeout(() => setShowConfetti(false), 5000)
   }
 
-  const filteredPrayers =
-    activeFilter === 'All'
-      ? prayers
-      : prayers.filter((prayer) => prayer.category === activeFilter)
+  // Updated filtering logic to include search
+  const filteredPrayers = prayers
+    .filter((prayer) => {
+      // Category filter
+      if (activeFilter === 'All') return true
+      return prayer.category === activeFilter
+    })
+    .filter((prayer) => {
+      // Search filter (case-insensitive)
+      if (searchQuery === '') return true
+      const query = searchQuery.toLowerCase()
+      return (
+        prayer.title.toLowerCase().includes(query) ||
+        (prayer.details && prayer.details.toLowerCase().includes(query))
+      )
+    })
 
   return (
     <div className="p-4 sm:p-8">
@@ -52,6 +66,18 @@ export default function ActivePrayersPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">All Prayers</h1>
           <p className="text-gray-600">Your complete prayer journal</p>
         </div>
+
+        {/* New Search Bar */}
+        <div className="mb-4">
+          <Input
+            type="text"
+            placeholder="Search prayers..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white"
+          />
+        </div>
+
         <div className="mb-8 overflow-x-auto pb-2">
           <div className="flex space-x-2">
             {allCategories.map((category) => (
@@ -82,9 +108,7 @@ export default function ActivePrayersPage() {
           ) : (
             <div className="text-center bg-white p-6 rounded-lg shadow-card">
               <p className="text-gray-500">
-                {activeFilter === 'All'
-                  ? "You haven't added any prayer requests yet."
-                  : `You don't have any prayers in the "${activeFilter}" category.`}
+                No prayers match your search or filter.
               </p>
             </div>
           )}
