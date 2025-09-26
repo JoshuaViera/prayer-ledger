@@ -1,3 +1,5 @@
+// File: components/prayers/CreatePrayerForm.tsx
+
 'use client'
 
 import { useForm } from 'react-hook-form'
@@ -6,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { prayerSchema, type PrayerFormData } from '@/lib/validations'
+import { prayerSchema, prayerCategories, type PrayerFormData } from '@/lib/validations'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 
@@ -22,6 +24,9 @@ export function CreatePrayerForm() {
     formState: { errors },
   } = useForm<PrayerFormData>({
     resolver: zodResolver(prayerSchema),
+    defaultValues: {
+      category: 'General', // Set a default value for the dropdown
+    },
   })
 
   const onSubmit = async (data: PrayerFormData) => {
@@ -39,6 +44,7 @@ export function CreatePrayerForm() {
       title: data.title,
       details: data.details,
       user_id: user.id,
+      category: data.category, // Include the category in the data we send
     })
 
     if (insertError) {
@@ -66,6 +72,22 @@ export function CreatePrayerForm() {
             <Input {...register('details')} placeholder="Details (optional)" />
             {errors.details && <p className="text-sm text-red-600 mt-1">{errors.details.message}</p>}
           </div>
+
+          {/* New Category Dropdown */}
+          <div>
+            <select
+              {...register('category')}
+              className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+            >
+              {prayerCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+            {errors.category && <p className="text-sm text-red-600 mt-1">{errors.category.message}</p>}
+          </div>
+
           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
           <div className="flex justify-end gap-2">
             <Button
