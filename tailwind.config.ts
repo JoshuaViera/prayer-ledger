@@ -1,5 +1,3 @@
-// tailwind.config.ts
-
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
@@ -13,11 +11,11 @@ const config: Config = {
       colors: {
         border: "hsl(214.3 31.8% 91.4%)",
         input: "hsl(214.3 31.8% 91.4%)",
-        ring: "hsl(222.2 84% 4.9%)",
+        ring: "hsl(250 84% 54%)", // Updated Ring color
         background: "hsl(0 0% 100%)",
         foreground: "hsl(222.2 84% 4.9%)",
         primary: {
-          DEFAULT: "hsl(222.2 47.4% 11.2%)",
+          DEFAULT: "hsl(250 78% 52%)", // New Vibrant Purple
           foreground: "hsl(210 40% 98%)",
         },
         secondary: {
@@ -42,10 +40,13 @@ const config: Config = {
         },
       },
       borderRadius: {
-        lg: "0.5rem",
-        md: "calc(0.5rem - 2px)",
-        sm: "calc(0.5rem - 4px)",
+        lg: "1rem", // Softer corners
+        md: "0.75rem",
+        sm: "0.5rem",
       },
+      boxShadow: { // Add softer shadows
+        'card': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
+      }
     },
   },
   plugins: [],

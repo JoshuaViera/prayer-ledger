@@ -1,4 +1,5 @@
 import { BottomNavBar } from "@/components/navigation/BottomNavBar";
+import { SideBar } from "@/components/navigation/SideBar";
 
 export default function MainAppLayout({
   children,
@@ -6,10 +7,13 @@ export default function MainAppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      {/* Add padding to the bottom of the main content to prevent overlap */}
-      <main className="pb-20 md:pb-0">{children}</main>
-      <BottomNavBar />
+    <div className="flex min-h-screen">
+      <SideBar />
+      <div className="flex-1">
+        {/* Add padding to the bottom on mobile to avoid overlap with the nav bar */}
+        <main className="pb-20 md:pb-0">{children}</main>
+        <BottomNavBar />
+      </div>
     </div>
   );
 }

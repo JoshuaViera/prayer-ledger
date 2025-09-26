@@ -4,13 +4,14 @@ import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
 import { Award, BarChart, CheckCircle2, Flame, HeartHandshake, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PrayerCard } from '@/components/prayers/prayercard'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
 function calculateStreak(prayers: Prayer[]) {
   if (!prayers || prayers.length === 0) return 0;
-  const activityDates = new Set(prayers.map(p => new Date(p.updated_at).toISOString().split('T')[0]));
+  const activityDates = new Set(
+    prayers.map(p => new Date(p.updated_at).toISOString().split('T')[0])
+  );
   let streak = 0;
   let today = new Date();
   if (activityDates.has(today.toISOString().split('T')[0])) {
@@ -43,8 +44,8 @@ function calculateStats(prayers: Prayer[]) {
 
 function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string; value: string | number }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
-      <div className="text-blue-900 mb-2">{icon}</div>
+    <div className="bg-white p-6 rounded-lg shadow-card flex flex-col items-center text-center">
+      <div className="text-primary mb-2">{icon}</div>
       <p className="text-3xl font-bold text-gray-800">{value}</p>
       <p className="text-sm text-gray-500">{title}</p>
     </div>
@@ -69,9 +70,9 @@ export default async function HomePage() {
   } catch (error) { console.error("Failed to fetch daily verse:", error) }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+    <div className="p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white p-8 rounded-xl shadow-lg mb-8 text-center">
+        <div className="bg-gradient-to-r from-primary to-indigo-600 text-white p-8 rounded-lg shadow-lg mb-8 text-center">
           <h1 className="text-4xl font-bold mb-2">Welcome Back</h1>
           <p className="text-lg italic text-indigo-200">"{verse.text}"</p>
           <p className="text-md font-semibold mt-2 text-indigo-300">- {verse.reference}</p>
@@ -83,7 +84,7 @@ export default async function HomePage() {
           <StatCard icon={<HeartHandshake size={28} />} title="Days in Prayer" value={stats.journeyDays} />
           <StatCard icon={<Flame size={28} />} title="Prayer Streak" value={`${streak} Day${streak === 1 ? '' : 's'}`} />
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md text-center">
+        <div className="bg-white p-6 rounded-lg shadow-card text-center">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">What would you like to do?</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="flex-1">
@@ -94,22 +95,6 @@ export default async function HomePage() {
             </Button>
           </div>
         </div>
-        {answeredPrayers.length > 0 && (
-          <div className="mt-8">
-            <div className="text-center mb-6">
-              <Award className="mx-auto h-8 w-8 text-amber-500 mb-2" />
-              <h2 className="text-3xl font-bold text-gray-800">Testimonies</h2>
-              <p className="text-gray-500">A journal of your answered prayers.</p>
-            </div>
-            <div className="space-y-4">
-              {answeredPrayers.map((prayer) => (
-                <div key={prayer.id} className="border-l-4 border-amber-400">
-                  <PrayerCard prayer={prayer} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
