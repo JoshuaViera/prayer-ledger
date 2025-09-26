@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Database } from '@/lib/database.types'
 import { Button } from '../ui/button'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { Trash2, Tag } from 'lucide-react'
-import { cn } from '@/lib/utils' // Import the cn utility
+import { Trash2, Tag, Star } from 'lucide-react' // Import Star icon
+import { cn } from '@/lib/utils'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
-// --- New: Define styles for each category ---
+// Styles for categories
 const categoryStyles: { [key: string]: string } = {
   'Personal Growth': 'border-l-rose-500',
   'Family & Relationships': 'border-l-teal-500',
@@ -18,6 +18,13 @@ const categoryStyles: { [key: string]: string } = {
   'World Events': 'border-l-violet-500',
   'Church Community': 'border-l-amber-500',
   'General': 'border-l-gray-400',
+}
+
+// --- New: Define styles for each priority level ---
+const priorityStyles: { [key: string]: string } = {
+  'High': 'bg-red-100 text-red-800',
+  'Medium': 'bg-yellow-100 text-yellow-800',
+  'Low': 'bg-gray-100 text-gray-800',
 }
 
 interface PrayerCardProps {
@@ -29,39 +36,40 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
 
   const handleUpdateStatus = async () => {
+    // ... (This function remains the same)
     const { error } = await supabase
       .from('prayers')
       .update({ status: 'answered' })
       .eq('id', prayer.id)
-    if (error) {
-      console.error('Error updating prayer status:', error)
-    } else {
-      onUpdate()
-    }
+    if (error) { console.error('Error updating prayer status:', error) } 
+    else { onUpdate() }
   }
 
   const handleDelete = async () => {
-    const isConfirmed = window.confirm(
-      'Are you sure you want to delete this prayer request?'
-    )
+    // ... (This function remains the same)
+    const isConfirmed = window.confirm('Are you sure you want to delete this prayer request?')
     if (isConfirmed) {
-      const { error } = await supabase
-        .from('prayers')
-        .delete()
-        .eq('id', prayer.id)
-      if (error) {
-        console.error('Error deleting prayer:', error)
-      } else {
-        onUpdate()
-      }
+      const { error } = await supabase.from('prayers').delete().eq('id', prayer.id)
+      if (error) { console.error('Error deleting prayer:', error) } 
+      else { onUpdate() }
     }
   }
 
-  // Get the style for the current prayer's category, or default to gray
+  // --- New: Function to toggle the favorite status ---
+  const handleToggleFavorite = async () => {
+    const { error } = await supabase
+      .from('prayers')
+      .update({ is_favorited: !prayer.is_favorited })
+      .eq('id', prayer.id)
+    
+    if (error) { console.error('Error updating favorite status:', error) }
+    else { onUpdate() }
+  }
+
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
+  const priorityColorClass = priorityStyles[prayer.priority] || priorityStyles['Medium']
 
   return (
-    // --- Updated: Apply the border color and a thicker border ---
     <Card className={cn('border-l-4', borderColorClass)}>
       <CardHeader className="flex flex-row justify-between items-start">
         <div>
@@ -70,15 +78,20 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
             <p className="text-gray-600 text-sm mt-1">{prayer.details}</p>
           )}
         </div>
-        <div>
+        <div className="flex flex-col items-end gap-2">
           <span
             className={`px-2 py-1 text-xs font-semibold rounded-full ${
               prayer.status === 'active'
                 ? 'bg-blue-100 text-blue-800'
-                : 'bg-green-100 text-green-800'
+                // Use gold/amber for answered, as per your plan
+                : 'bg-amber-100 text-amber-800' 
             }`}
           >
             {prayer.status}
+          </span>
+          {/* --- New: Priority Badge --- */}
+          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityColorClass}`}>
+            {prayer.priority} Priority
           </span>
         </div>
       </CardHeader>
@@ -89,6 +102,10 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
             <span>{prayer.category}</span>
           </div>
           <div className="flex items-center gap-2">
+            {/* --- New: Favorite Button --- */}
+            <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
+              <Star className={`h-5 w-5 text-yellow-500 ${prayer.is_favorited ? 'fill-current' : ''}`} />
+            </Button>
             <Button variant="ghost" size="icon" onClick={handleDelete}>
               <Trash2 className="h-4 w-4 text-red-500" />
             </Button>
