@@ -4,11 +4,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { PrayerCard } from '@/components/prayers/prayercard'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Database } from '@/lib/database.types'
+import { prayerCategories } from '@/lib/validations' // Import our categories
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
+const allCategories = ['All', ...prayerCategories] // Add "All" to our list for the filter
 
 export default function ActivePrayersPage() {
   const [prayers, setPrayers] = useState<Prayer[]>([])
+  // --- New: State to track the selected filter ---
+  const [activeFilter, setActiveFilter] = useState('All')
   const supabase = createSupabaseBrowserClient()
 
   const fetchPrayers = useCallback(async () => {
@@ -28,16 +32,43 @@ export default function ActivePrayersPage() {
     fetchPrayers()
   }, [fetchPrayers])
 
+  // --- New: Logic to filter prayers based on the active filter ---
+  const filteredPrayers =
+    activeFilter === 'All'
+      ? prayers
+      : prayers.filter((prayer) => prayer.category === activeFilter)
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">All Prayers</h1>
           <p className="text-gray-600">Your complete prayer journal</p>
         </div>
+
+        {/* --- New: Filter Tabs --- */}
+        <div className="mb-8 overflow-x-auto pb-2">
+          <div className="flex space-x-2">
+            {allCategories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap ${
+                  activeFilter === category
+                    ? 'bg-blue-800 text-white shadow'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-4">
-          {prayers && prayers.length > 0 ? (
-            prayers.map((prayer) => (
+          {filteredPrayers && filteredPrayers.length > 0 ? (
+            // --- Updated: Use the filtered list ---
+            filteredPrayers.map((prayer) => (
               <PrayerCard
                 key={prayer.id}
                 prayer={prayer}
@@ -46,7 +77,11 @@ export default function ActivePrayersPage() {
             ))
           ) : (
             <div className="text-center bg-white p-6 rounded-lg shadow">
-              <p className="text-gray-500">You haven't added any prayer requests yet.</p>
+              <p className="text-gray-500">
+                {activeFilter === 'All'
+                  ? "You haven't added any prayer requests yet."
+                  : `You don't have any prayers in the "${activeFilter}" category.`}
+              </p>
             </div>
           )}
         </div>
