@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, List, Award, PlusCircle, LogOut, BookOpenText, User } from 'lucide-react' // Add User icon
+import { Home, List, Award, PlusCircle, LogOut, BookOpenText, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -12,10 +12,9 @@ const navLinks = [
   { href: '/prayers/active', label: 'All Prayers', icon: List },
   { href: '/prayers/answered', label: 'Answered', icon: Award },
   { href: '/prayers/add', label: 'Add Prayer', icon: PlusCircle },
-  { href: '/profile', label: 'Profile', icon: User }, // Add Profile Link
+  { href: '/profile', label: 'Profile', icon: User },
 ]
 
-// ... (rest of the file is the same)
 export function SideBar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -27,10 +26,10 @@ export function SideBar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200">
-      <div className="flex items-center justify-center h-20 border-b">
-        <BookOpenText className="h-8 w-8 text-indigo-600" />
-        <span className="ml-2 text-2xl font-bold text-gray-800">Prayer Ledger</span>
+    <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border shadow-lg z-20 transition-colors">
+      <div className="flex items-center justify-center h-20 border-b border-border">
+        <BookOpenText className="h-8 w-8 text-primary" />
+        <span className="ml-2 text-2xl font-bold text-foreground">Prayer Ledger</span>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-2">
         {navLinks.map((link) => {
@@ -40,10 +39,10 @@ export function SideBar() {
               key={link.href}
               href={link.href}
               className={cn(
-                'flex items-center px-4 py-3 text-gray-700 rounded-lg',
+                'flex items-center px-4 py-3 text-muted-foreground rounded-lg transition-colors',
                 isActive
-                  ? 'bg-indigo-100 text-indigo-700 font-semibold'
-                  : 'hover:bg-gray-100'
+                  ? 'bg-primary/20 text-primary font-semibold shadow-md' // Brighter active link
+                  : 'hover:bg-secondary hover:text-foreground' // Darker hover
               )}
             >
               <link.icon className="h-5 w-5 mr-3" />
@@ -52,10 +51,10 @@ export function SideBar() {
           )
         })}
       </nav>
-      <div className="px-4 py-6 border-t">
+      <div className="px-4 py-6 border-t border-border">
         <button
           onClick={handleLogout}
-          className="flex items-center w-full px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100"
+          className="flex items-center w-full px-4 py-3 text-muted-foreground rounded-lg hover:bg-secondary hover:text-foreground transition-colors"
         >
           <LogOut className="h-5 w-5 mr-3" />
           <span>Log Out</span>

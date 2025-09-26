@@ -7,6 +7,20 @@
     @apply border-border;
   }
   body {
-    @apply bg-gray-50 text-foreground; /* Use a slightly off-white background */
+    /* Use the new Tailwind CSS variables for background and text */
+    @apply bg-background text-foreground; 
+  }
+}
+
+@layer components {
+  .bg-card {
+    /* Set the default card background to our new 'card' color */
+    @apply bg-card;
+  }
+  /* Optional: Add a subtle transition for smoother UI changes */
+  .transition-colors {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
