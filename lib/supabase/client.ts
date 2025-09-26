@@ -1,44 +1,56 @@
-// lib/supabase/client.ts
+// // lib/supabase/client.ts
 
-import { createClient } from '@supabase/supabase-js'
+// import { createClient } from '@supabase/supabase-js'
 
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// export const supabase = createClient(
+//   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// )
 
-export type Database = {
-  public: {
-    Tables: {
-      prayers: {
-        Row: {
-          id: string
-          user_id: string
-          created_at: string
-          updated_at: string
-          title: string
-          details: string | null
-          status: 'active' | 'answered'
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          created_at?: string
-          updated_at?: string
-          title: string
-          details?: string | null
-          status?: 'active' | 'answered'
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          created_at?: string
-          updated_at?: string
-          title?: string
-          details?: string | null
-          status?: 'active' | 'answered'
-        }
-      }
-    }
-  }
+// export type Database = {
+//   public: {
+//     Tables: {
+//       prayers: {
+//         Row: {
+//           id: string
+//           user_id: string
+//           created_at: string
+//           updated_at: string
+//           title: string
+//           details: string | null
+//           status: 'active' | 'answered'
+//         }
+//         Insert: {
+//           id?: string
+//           user_id: string
+//           created_at?: string
+//           updated_at?: string
+//           title: string
+//           details?: string | null
+//           status?: 'active' | 'answered'
+//         }
+//         Update: {
+//           id?: string
+//           user_id?: string
+//           created_at?: string
+//           updated_at?: string
+//           title?: string
+//           details?: string | null
+//           status?: 'active' | 'answered'
+//         }
+//       }
+//     }
+//   }
+// }
+
+// File: lib/supabase/client.ts
+
+import { createBrowserClient } from '@supabase/ssr'
+import { Database } from '@/lib/database.types'
+
+export function createSupabaseBrowserClient() {
+  return createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }

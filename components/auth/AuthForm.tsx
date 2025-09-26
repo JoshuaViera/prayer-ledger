@@ -6,15 +6,10 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { createClient } from '@supabase/supabase-js'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 const authSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -31,6 +26,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const supabase = createSupabaseBrowserClient()
 
   const {
     register,
@@ -46,19 +42,12 @@ export function AuthForm({ mode }: AuthFormProps) {
 
     try {
       if (mode === 'login') {
-        const { data: loginData, error } = await supabase.auth.signInWithPassword(data)
-        
-        // --- Start Debugging Code ---
-        console.log('--- Client Login Attempt ---')
-        console.log('Login Data:', loginData)
-        console.log('Login Error:', error)
-        // --- End Debugging Code ---
-
+        const { error } = await supabase.auth.signInWithPassword(data)
         if (error) {
           setError(error.message)
         } else {
           router.push('/dashboard')
-          router.refresh() // Force a server-side data re-fetch
+          router.refresh()
         }
       } else {
         const { error } = await supabase.auth.signUp(data)
