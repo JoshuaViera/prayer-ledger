@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Database } from '@/lib/database.types'
 import { Button } from '../ui/button'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { Trash2 } from 'lucide-react' // Import an icon
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
 interface PrayerCardProps {
   prayer: Prayer
-  onUpdate: () => void // Callback to tell the dashboard to refresh
+  onUpdate: () => void // This will now serve for both update and delete refreshes
 }
 
 export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
@@ -25,7 +26,27 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
     if (error) {
       console.error('Error updating prayer status:', error)
     } else {
-      onUpdate() // Trigger the refresh on the dashboard
+      onUpdate()
+    }
+  }
+
+  const handleDelete = async () => {
+    // Add a confirmation step before deleting
+    const isConfirmed = window.confirm(
+      'Are you sure you want to delete this prayer request?'
+    )
+
+    if (isConfirmed) {
+      const { error } = await supabase
+        .from('prayers')
+        .delete()
+        .eq('id', prayer.id)
+
+      if (error) {
+        console.error('Error deleting prayer:', error)
+      } else {
+        onUpdate() // Re-use the onUpdate to refresh the list
+      }
     }
   }
 
@@ -34,7 +55,9 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
       <CardHeader className="flex flex-row justify-between items-start">
         <div>
           <CardTitle>{prayer.title}</CardTitle>
-          {prayer.details && <p className="text-gray-600 text-sm mt-1">{prayer.details}</p>}
+          {prayer.details && (
+            <p className="text-gray-600 text-sm mt-1">{prayer.details}</p>
+          )}
         </div>
         <div>
           <span
@@ -49,13 +72,19 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        {prayer.status === 'active' && (
-          <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-2">
+          {/* Delete Button */}
+          <Button variant="ghost" size="icon" onClick={handleDelete}>
+            <Trash2 className="h-4 w-4 text-red-500" />
+          </Button>
+
+          {/* Update Button */}
+          {prayer.status === 'active' && (
             <Button variant="outline" size="sm" onClick={handleUpdateStatus}>
               Mark as Answered
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   )
