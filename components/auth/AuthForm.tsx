@@ -1,4 +1,6 @@
-// components/auth/AuthForm.tsx
+
+// File: components/auth/AuthForm.tsx
+
 'use client'
 
 import { useState } from 'react'
@@ -46,7 +48,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         if (error) {
           setError(error.message)
         } else {
-          router.push('/dashboard')
+          router.push('/home') // <-- Updated redirect destination
           router.refresh()
         }
       } else {
