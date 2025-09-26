@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Database } from '@/lib/database.types'
 import { Button } from '../ui/button'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { Trash2, Tag, Star } from 'lucide-react'
+import { Trash2, Tag, Star, Share2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
@@ -29,16 +30,27 @@ const priorityStyles: { [key: string]: string } = {
 interface PrayerCardProps {
   prayer: Prayer
   onUpdate?: () => void
-  onPrayerAnswered?: () => void
 }
 
-export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardProps) {
+export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
   const router = useRouter()
+  const [isCopied, setIsCopied] = useState(false)
 
   const refreshData = () => {
     if (onUpdate) onUpdate()
     else router.refresh()
+  }
+
+  const handleShare = async () => {
+    const prayerText = `Prayer Request: ${prayer.title}\n\nDetails: ${prayer.details || 'No details provided.'}`
+    try {
+      await navigator.clipboard.writeText(prayerText)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
+    }
   }
 
   const handleUpdateStatus = async () => {
@@ -46,13 +58,8 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
       .from('prayers')
       .update({ status: 'answered' })
       .eq('id', prayer.id)
-    
-    if (error) {
-      console.error('Error updating prayer status:', error)
-    } else {
-      if (onPrayerAnswered) onPrayerAnswered()
-      else refreshData()
-    }
+    if (error) { console.error('Error updating prayer status:', error) } 
+    else { refreshData() }
   }
 
   const handleDelete = async () => {
@@ -69,7 +76,6 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
       .from('prayers')
       .update({ is_favorited: !prayer.is_favorited })
       .eq('id', prayer.id)
-    
     if (error) { console.error('Error updating favorite status:', error) } 
     else { refreshData() }
   }
@@ -108,6 +114,13 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
             <span>{prayer.category}</span>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={handleShare}>
+              {isCopied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Share2 className="h-4 w-4 text-gray-500" />
+              )}
+            </Button>
             <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
               <Star className={`h-5 w-5 text-yellow-500 ${prayer.is_favorited ? 'fill-current' : ''}`} />
             </Button>
