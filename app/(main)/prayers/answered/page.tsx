@@ -31,7 +31,7 @@ export default function AnsweredPrayersPage() {
   }, [fetchPrayers])
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-12 text-center">
           <Award className="mx-auto h-12 w-12 text-amber-500 mb-2" />
@@ -44,11 +44,12 @@ export default function AnsweredPrayersPage() {
               <div key={prayer.id} className="border-2 border-amber-300 rounded-lg shadow-sm">
                 <PrayerCard
                   prayer={prayer}
+                  onUpdate={fetchPrayers} // <-- Pass the refresh function here
                 />
               </div>
             ))
           ) : (
-            <div className="text-center bg-white p-6 rounded-lg shadow">
+            <div className="text-center bg-white p-6 rounded-lg shadow-card">
               <p className="text-gray-500">You don't have any answered prayers yet.</p>
             </div>
           )}

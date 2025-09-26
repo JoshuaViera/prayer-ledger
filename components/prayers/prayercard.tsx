@@ -28,11 +28,20 @@ const priorityStyles: { [key: string]: string } = {
 
 interface PrayerCardProps {
   prayer: Prayer
+  onUpdate?: () => void
 }
 
-export function PrayerCard({ prayer }: PrayerCardProps) {
+export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
   const router = useRouter()
+
+  const refreshData = () => {
+    if (onUpdate) {
+      onUpdate()
+    } else {
+      router.refresh()
+    }
+  }
 
   const handleUpdateStatus = async () => {
     const { error } = await supabase
@@ -40,16 +49,22 @@ export function PrayerCard({ prayer }: PrayerCardProps) {
       .update({ status: 'answered' })
       .eq('id', prayer.id)
     
-    if (error) { console.error('Error updating prayer status:', error) } 
-    else { router.refresh() }
+    if (error) {
+      console.error('Error updating prayer status:', error)
+    } else {
+      refreshData()
+    }
   }
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm('Are you sure you want to delete this prayer request?')
     if (isConfirmed) {
       const { error } = await supabase.from('prayers').delete().eq('id', prayer.id)
-      if (error) { console.error('Error deleting prayer:', error) } 
-      else { router.refresh() }
+      if (error) {
+        console.error('Error deleting prayer:', error)
+      } else {
+        refreshData()
+      }
     }
   }
 
@@ -59,15 +74,18 @@ export function PrayerCard({ prayer }: PrayerCardProps) {
       .update({ is_favorited: !prayer.is_favorited })
       .eq('id', prayer.id)
     
-    if (error) { console.error('Error updating favorite status:', error) } 
-    else { router.refresh() }
+    if (error) {
+      console.error('Error updating favorite status:', error)
+    } else {
+      refreshData()
+    }
   }
 
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
   const priorityColorClass = priorityStyles[prayer.priority] || priorityStyles['Medium']
 
   return (
-    <Card className={cn('border-l-4', borderColorClass)}>
+    <Card className={cn('border-l-4 shadow-card', borderColorClass)}>
       <CardHeader className="flex flex-row justify-between items-start">
         <div>
           <CardTitle>{prayer.title}</CardTitle>
@@ -80,7 +98,7 @@ export function PrayerCard({ prayer }: PrayerCardProps) {
             className={`px-2 py-1 text-xs font-semibold rounded-full ${
               prayer.status === 'active'
                 ? 'bg-blue-100 text-blue-800'
-                : 'bg-amber-100 text-amber-800' 
+                : 'bg-amber-100 text-amber-800'
             }`}
           >
             {prayer.status}

@@ -14,8 +14,6 @@ export default function ActivePrayersPage() {
   const [activeFilter, setActiveFilter] = useState('All')
   const supabase = createSupabaseBrowserClient()
 
-  // We no longer need to pass this function down, but we still need it here
-  // for the initial data fetch.
   const fetchPrayers = useCallback(async () => {
     const { data, error } = await supabase
       .from('prayers')
@@ -39,21 +37,22 @@ export default function ActivePrayersPage() {
       : prayers.filter((prayer) => prayer.category === activeFilter)
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">All Prayers</h1>
           <p className="text-gray-600">Your complete prayer journal</p>
         </div>
+
         <div className="mb-8 overflow-x-auto pb-2">
           <div className="flex space-x-2">
             {allCategories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveFilter(category)}
-                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap ${
                   activeFilter === category
-                    ? 'bg-blue-800 text-white shadow'
+                    ? 'bg-primary text-white shadow'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -62,16 +61,18 @@ export default function ActivePrayersPage() {
             ))}
           </div>
         </div>
+
         <div className="space-y-4">
           {filteredPrayers && filteredPrayers.length > 0 ? (
             filteredPrayers.map((prayer) => (
               <PrayerCard
                 key={prayer.id}
                 prayer={prayer}
+                onUpdate={fetchPrayers} // <-- Pass the refresh function here
               />
             ))
           ) : (
-            <div className="text-center bg-white p-6 rounded-lg shadow">
+            <div className="text-center bg-white p-6 rounded-lg shadow-card">
               <p className="text-gray-500">
                 {activeFilter === 'All'
                   ? "You haven't added any prayer requests yet."
