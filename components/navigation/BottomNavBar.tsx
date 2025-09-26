@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, List, Award, PlusCircle } from 'lucide-react'
+import { Home, List, Award, PlusCircle, User } from 'lucide-react' // Add User icon
 import { cn } from '@/lib/utils'
 
 const navLinks = [
@@ -10,8 +10,10 @@ const navLinks = [
   { href: '/prayers/active', label: 'Prayers', icon: List },
   { href: '/prayers/add', label: 'Add', icon: PlusCircle },
   { href: '/prayers/answered', label: 'Answered', icon: Award },
+  { href: '/profile', label: 'Profile', icon: User }, // Add Profile Link
 ]
 
+// ... (rest of the file is the same)
 export function BottomNavBar() {
   const pathname = usePathname()
 
@@ -26,7 +28,7 @@ export function BottomNavBar() {
               href={link.href}
               className={cn(
                 'flex flex-col items-center justify-center w-full h-full text-sm font-medium',
-                isActive ? 'text-blue-800' : 'text-gray-500 hover:text-blue-700'
+                isActive ? 'text-primary' : 'text-gray-500 hover:text-primary'
               )}
             >
               <link.icon className="h-6 w-6 mb-1" />

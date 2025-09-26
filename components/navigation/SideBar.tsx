@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, List, Award, PlusCircle, LogOut, BookOpenText } from 'lucide-react'
+import { Home, List, Award, PlusCircle, LogOut, BookOpenText, User } from 'lucide-react' // Add User icon
 import { cn } from '@/lib/utils'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -12,8 +12,10 @@ const navLinks = [
   { href: '/prayers/active', label: 'All Prayers', icon: List },
   { href: '/prayers/answered', label: 'Answered', icon: Award },
   { href: '/prayers/add', label: 'Add Prayer', icon: PlusCircle },
+  { href: '/profile', label: 'Profile', icon: User }, // Add Profile Link
 ]
 
+// ... (rest of the file is the same)
 export function SideBar() {
   const pathname = usePathname()
   const router = useRouter()
