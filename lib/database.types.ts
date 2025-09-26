@@ -45,6 +45,8 @@ export type Database = {
           created_at: string
           details: string | null
           id: string
+          is_favorited: boolean
+          priority: string
           status: string
           title: string
           updated_at: string
@@ -55,6 +57,8 @@ export type Database = {
           created_at?: string
           details?: string | null
           id?: string
+          is_favorited?: boolean
+          priority?: string
           status?: string
           title: string
           updated_at?: string
@@ -65,6 +69,8 @@ export type Database = {
           created_at?: string
           details?: string | null
           id?: string
+          is_favorited?: boolean
+          priority?: string
           status?: string
           title?: string
           updated_at?: string
