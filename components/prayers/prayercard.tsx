@@ -1,14 +1,24 @@
-// File: components/prayers/prayerCard.tsx
-
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Database } from '@/lib/database.types'
 import { Button } from '../ui/button'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { Trash2, Tag } from 'lucide-react' // Import Tag icon
+import { Trash2, Tag } from 'lucide-react'
+import { cn } from '@/lib/utils' // Import the cn utility
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
+
+// --- New: Define styles for each category ---
+const categoryStyles: { [key: string]: string } = {
+  'Personal Growth': 'border-l-rose-500',
+  'Family & Relationships': 'border-l-teal-500',
+  'Health & Healing': 'border-l-green-500',
+  'Career & Finances': 'border-l-sky-500',
+  'World Events': 'border-l-violet-500',
+  'Church Community': 'border-l-amber-500',
+  'General': 'border-l-gray-400',
+}
 
 interface PrayerCardProps {
   prayer: Prayer
@@ -47,8 +57,12 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
     }
   }
 
+  // Get the style for the current prayer's category, or default to gray
+  const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
+
   return (
-    <Card>
+    // --- Updated: Apply the border color and a thicker border ---
+    <Card className={cn('border-l-4', borderColorClass)}>
       <CardHeader className="flex flex-row justify-between items-start">
         <div>
           <CardTitle>{prayer.title}</CardTitle>
@@ -70,7 +84,6 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center">
-          {/* Display Category */}
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Tag className="h-3 w-3" />
             <span>{prayer.category}</span>
