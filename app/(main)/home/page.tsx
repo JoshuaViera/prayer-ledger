@@ -8,34 +8,22 @@ import { PrayerCard } from '@/components/prayers/prayercard'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
-// --- New: Helper function to calculate prayer streak ---
 function calculateStreak(prayers: Prayer[]) {
   if (!prayers || prayers.length === 0) return 0;
-
-  // Get all unique dates the user was active (created or updated a prayer)
-  const activityDates = new Set(
-    prayers.map(p => new Date(p.updated_at).toISOString().split('T')[0])
-  );
-
+  const activityDates = new Set(prayers.map(p => new Date(p.updated_at).toISOString().split('T')[0]));
   let streak = 0;
   let today = new Date();
-
-  // Check if there was activity today
   if (activityDates.has(today.toISOString().split('T')[0])) {
     streak = 1;
     let yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
-
-    // Count backwards from yesterday to find consecutive days
     while (activityDates.has(yesterday.toISOString().split('T')[0])) {
       streak++;
       yesterday.setDate(yesterday.getDate() - 1);
     }
   }
-  
   return streak;
 }
-
 
 function calculateStats(prayers: Prayer[]) {
   if (!prayers || prayers.length === 0) {
@@ -54,7 +42,6 @@ function calculateStats(prayers: Prayer[]) {
 }
 
 function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string; value: string | number }) {
-  // ... (This component remains the same)
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
       <div className="text-blue-900 mb-2">{icon}</div>
@@ -72,7 +59,7 @@ export default async function HomePage() {
   const { data: prayers } = await supabase.from('prayers').select('*').order('created_at', { ascending: false })
   const stats = calculateStats(prayers || [])
   const answeredPrayers = (prayers || []).filter(p => p.status === 'answered');
-  const streak = calculateStreak(prayers || []); // Calculate the streak
+  const streak = calculateStreak(prayers || []);
 
   let verse = { text: 'For where two or three are gathered in my name, there am I among them.', reference: 'Matthew 18:20' }
   try {
@@ -89,18 +76,14 @@ export default async function HomePage() {
           <p className="text-lg italic text-indigo-200">"{verse.text}"</p>
           <p className="text-md font-semibold mt-2 text-indigo-300">- {verse.reference}</p>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"> {/* Updated grid to 5 cols */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <StatCard icon={<BarChart size={28} />} title="Total Prayers" value={stats.total} />
           <StatCard icon={<CheckCircle2 size={28} />} title="Answered" value={stats.answered} />
           <StatCard icon={<Target size={28} />} title="Active Requests" value={stats.active} />
           <StatCard icon={<HeartHandshake size={28} />} title="Days in Prayer" value={stats.journeyDays} />
-          {/* --- New: Prayer Streak Card --- */}
           <StatCard icon={<Flame size={28} />} title="Prayer Streak" value={`${streak} Day${streak === 1 ? '' : 's'}`} />
         </div>
-        
         <div className="bg-white p-6 rounded-lg shadow-md text-center">
-          {/* ... (This section remains the same) */}
           <h2 className="text-xl font-semibold text-gray-800 mb-4">What would you like to do?</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="flex-1">
@@ -111,10 +94,8 @@ export default async function HomePage() {
             </Button>
           </div>
         </div>
-
         {answeredPrayers.length > 0 && (
           <div className="mt-8">
-            {/* ... (This section remains the same) */}
             <div className="text-center mb-6">
               <Award className="mx-auto h-8 w-8 text-amber-500 mb-2" />
               <h2 className="text-3xl font-bold text-gray-800">Testimonies</h2>
@@ -123,7 +104,7 @@ export default async function HomePage() {
             <div className="space-y-4">
               {answeredPrayers.map((prayer) => (
                 <div key={prayer.id} className="border-l-4 border-amber-400">
-                  <PrayerCard prayer={prayer} onUpdate={() => {}} />
+                  <PrayerCard prayer={prayer} />
                 </div>
               ))}
             </div>

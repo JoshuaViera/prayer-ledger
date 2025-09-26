@@ -4,17 +4,18 @@ import { useState, useEffect, useCallback } from 'react'
 import { PrayerCard } from '@/components/prayers/prayercard'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Database } from '@/lib/database.types'
-import { prayerCategories } from '@/lib/validations' // Import our categories
+import { prayerCategories } from '@/lib/validations'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
-const allCategories = ['All', ...prayerCategories] // Add "All" to our list for the filter
+const allCategories = ['All', ...prayerCategories]
 
 export default function ActivePrayersPage() {
   const [prayers, setPrayers] = useState<Prayer[]>([])
-  // --- New: State to track the selected filter ---
   const [activeFilter, setActiveFilter] = useState('All')
   const supabase = createSupabaseBrowserClient()
 
+  // We no longer need to pass this function down, but we still need it here
+  // for the initial data fetch.
   const fetchPrayers = useCallback(async () => {
     const { data, error } = await supabase
       .from('prayers')
@@ -32,7 +33,6 @@ export default function ActivePrayersPage() {
     fetchPrayers()
   }, [fetchPrayers])
 
-  // --- New: Logic to filter prayers based on the active filter ---
   const filteredPrayers =
     activeFilter === 'All'
       ? prayers
@@ -45,8 +45,6 @@ export default function ActivePrayersPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">All Prayers</h1>
           <p className="text-gray-600">Your complete prayer journal</p>
         </div>
-
-        {/* --- New: Filter Tabs --- */}
         <div className="mb-8 overflow-x-auto pb-2">
           <div className="flex space-x-2">
             {allCategories.map((category) => (
@@ -64,15 +62,12 @@ export default function ActivePrayersPage() {
             ))}
           </div>
         </div>
-
         <div className="space-y-4">
           {filteredPrayers && filteredPrayers.length > 0 ? (
-            // --- Updated: Use the filtered list ---
             filteredPrayers.map((prayer) => (
               <PrayerCard
                 key={prayer.id}
                 prayer={prayer}
-                onUpdate={fetchPrayers}
               />
             ))
           ) : (

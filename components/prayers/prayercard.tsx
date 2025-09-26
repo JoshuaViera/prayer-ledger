@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Database } from '@/lib/database.types'
 import { Button } from '../ui/button'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { Trash2, Tag, Star } from 'lucide-react' // Import Star icon
+import { Trash2, Tag, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
-// Styles for categories
 const categoryStyles: { [key: string]: string } = {
   'Personal Growth': 'border-l-rose-500',
   'Family & Relationships': 'border-l-teal-500',
@@ -20,7 +20,6 @@ const categoryStyles: { [key: string]: string } = {
   'General': 'border-l-gray-400',
 }
 
-// --- New: Define styles for each priority level ---
 const priorityStyles: { [key: string]: string } = {
   'High': 'bg-red-100 text-red-800',
   'Medium': 'bg-yellow-100 text-yellow-800',
@@ -29,41 +28,39 @@ const priorityStyles: { [key: string]: string } = {
 
 interface PrayerCardProps {
   prayer: Prayer
-  onUpdate: () => void
 }
 
-export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
+export function PrayerCard({ prayer }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
+  const router = useRouter()
 
   const handleUpdateStatus = async () => {
-    // ... (This function remains the same)
     const { error } = await supabase
       .from('prayers')
       .update({ status: 'answered' })
       .eq('id', prayer.id)
+    
     if (error) { console.error('Error updating prayer status:', error) } 
-    else { onUpdate() }
+    else { router.refresh() }
   }
 
   const handleDelete = async () => {
-    // ... (This function remains the same)
     const isConfirmed = window.confirm('Are you sure you want to delete this prayer request?')
     if (isConfirmed) {
       const { error } = await supabase.from('prayers').delete().eq('id', prayer.id)
       if (error) { console.error('Error deleting prayer:', error) } 
-      else { onUpdate() }
+      else { router.refresh() }
     }
   }
 
-  // --- New: Function to toggle the favorite status ---
   const handleToggleFavorite = async () => {
     const { error } = await supabase
       .from('prayers')
       .update({ is_favorited: !prayer.is_favorited })
       .eq('id', prayer.id)
     
-    if (error) { console.error('Error updating favorite status:', error) }
-    else { onUpdate() }
+    if (error) { console.error('Error updating favorite status:', error) } 
+    else { router.refresh() }
   }
 
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
@@ -83,13 +80,11 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
             className={`px-2 py-1 text-xs font-semibold rounded-full ${
               prayer.status === 'active'
                 ? 'bg-blue-100 text-blue-800'
-                // Use gold/amber for answered, as per your plan
                 : 'bg-amber-100 text-amber-800' 
             }`}
           >
             {prayer.status}
           </span>
-          {/* --- New: Priority Badge --- */}
           <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityColorClass}`}>
             {prayer.priority} Priority
           </span>
@@ -102,7 +97,6 @@ export function PrayerCard({ prayer, onUpdate }: PrayerCardProps) {
             <span>{prayer.category}</span>
           </div>
           <div className="flex items-center gap-2">
-            {/* --- New: Favorite Button --- */}
             <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
               <Star className={`h-5 w-5 text-yellow-500 ${prayer.is_favorited ? 'fill-current' : ''}`} />
             </Button>

@@ -44,7 +44,6 @@ export default function AnsweredPrayersPage() {
               <div key={prayer.id} className="border-2 border-amber-300 rounded-lg shadow-sm">
                 <PrayerCard
                   prayer={prayer}
-                  onUpdate={fetchPrayers}
                 />
               </div>
             ))
