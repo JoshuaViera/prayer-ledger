@@ -41,6 +41,7 @@ export type Database = {
     Tables: {
       prayers: {
         Row: {
+          category: string
           created_at: string
           details: string | null
           id: string
@@ -50,6 +51,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string
           created_at?: string
           details?: string | null
           id?: string
@@ -59,6 +61,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string
           created_at?: string
           details?: string | null
           id?: string
