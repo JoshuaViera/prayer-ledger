@@ -1,5 +1,4 @@
 // File: app/(main)/dashboard/page.tsx
-
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -34,8 +33,8 @@ export default function DashboardPage() {
   }, [fetchPrayers])
 
   const handlePrayerAdded = () => {
-    fetchPrayers() // Re-fetch the prayers
-    setShowCreateForm(false) // Close the modal
+    fetchPrayers()
+    setShowCreateForm(false)
   }
 
   return (
@@ -54,7 +53,11 @@ export default function DashboardPage() {
         <div className="space-y-4">
           {prayers && prayers.length > 0 ? (
             prayers.map((prayer) => (
-              <PrayerCard key={prayer.id} prayer={prayer} />
+              <PrayerCard
+                key={prayer.id}
+                prayer={prayer}
+                onUpdate={fetchPrayers} // <-- Pass the fetch function here
+              />
             ))
           ) : (
             <div className="text-center bg-white p-6 rounded-lg shadow">
