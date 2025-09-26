@@ -1,6 +1,10 @@
-// components/prayers/prayercard.tsx
+// File: components/prayers/prayerCard.tsx
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { Prayer } from '@/types'
+import type { Database } from '@/lib/database.types'
+
+// Define the Prayer type using the single source of truth from our generated types
+type Prayer = Database['public']['Tables']['prayers']['Row']
 
 interface PrayerCardProps {
   prayer: Prayer

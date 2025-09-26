@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PrayerCard } from '@/components/prayers/prayercard'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Database } from '@/lib/database.types'
@@ -16,22 +16,27 @@ export default function DashboardPage() {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const supabase = createSupabaseBrowserClient()
 
-  useEffect(() => {
-    const getPrayers = async () => {
-      const { data, error } = await supabase
-        .from('prayers')
-        .select('*')
-        .order('created_at', { ascending: false })
+  const fetchPrayers = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('prayers')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-      if (error) {
-        console.error('Error fetching prayers:', error)
-      } else {
-        setPrayers(data)
-      }
+    if (error) {
+      console.error('Error fetching prayers:', error)
+    } else {
+      setPrayers(data)
     }
-
-    getPrayers()
   }, [supabase])
+
+  useEffect(() => {
+    fetchPrayers()
+  }, [fetchPrayers])
+
+  const handlePrayerAdded = () => {
+    fetchPrayers() // Re-fetch the prayers
+    setShowCreateForm(false) // Close the modal
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -44,7 +49,7 @@ export default function DashboardPage() {
           <Button onClick={() => setShowCreateForm(true)}>Add New Prayer</Button>
         </div>
 
-        {showCreateForm && <CreatePrayerForm onClose={() => setShowCreateForm(false)} />}
+        {showCreateForm && <CreatePrayerForm onSuccess={handlePrayerAdded} />}
 
         <div className="space-y-4">
           {prayers && prayers.length > 0 ? (

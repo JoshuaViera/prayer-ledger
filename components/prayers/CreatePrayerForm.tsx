@@ -4,7 +4,6 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -13,13 +12,12 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 
 interface CreatePrayerFormProps {
-  onClose: () => void
+  onSuccess: () => void
 }
 
-export function CreatePrayerForm({ onClose }: CreatePrayerFormProps) {
+export function CreatePrayerForm({ onSuccess }: CreatePrayerFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
   const supabase = createSupabaseBrowserClient()
 
   const {
@@ -52,8 +50,7 @@ export function CreatePrayerForm({ onClose }: CreatePrayerFormProps) {
       setError(insertError.message)
       setIsLoading(false)
     } else {
-      router.refresh() // This is key! It re-fetches the prayers on the dashboard.
-      onClose() // Close the form
+      onSuccess() // Call the success handler from the parent
     }
   }
 
@@ -75,7 +72,7 @@ export function CreatePrayerForm({ onClose }: CreatePrayerFormProps) {
             </div>
             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
+              <Button type="button" variant="ghost" onClick={onSuccess} disabled={isLoading}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
