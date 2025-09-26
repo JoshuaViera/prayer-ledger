@@ -1,9 +1,8 @@
-// File: components/prayers/CreatePrayerForm.tsx
-
 'use client'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -11,13 +10,10 @@ import { prayerSchema, type PrayerFormData } from '@/lib/validations'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 
-interface CreatePrayerFormProps {
-  onSuccess: () => void
-}
-
-export function CreatePrayerForm({ onSuccess }: CreatePrayerFormProps) {
+export function CreatePrayerForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
   const supabase = createSupabaseBrowserClient()
 
   const {
@@ -33,7 +29,6 @@ export function CreatePrayerForm({ onSuccess }: CreatePrayerFormProps) {
     setError(null)
     
     const { data: { user } } = await supabase.auth.getUser()
-
     if (!user) {
       setError('You must be logged in to create a prayer request.')
       setIsLoading(false)
@@ -50,38 +45,43 @@ export function CreatePrayerForm({ onSuccess }: CreatePrayerFormProps) {
       setError(insertError.message)
       setIsLoading(false)
     } else {
-      onSuccess() // Call the success handler from the parent
+      router.push('/prayers/active')
+      router.refresh()
     }
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Add a New Prayer Request</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Input {...register('title')} placeholder="Prayer Title (e.g., 'For my family')" />
-              {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
-            </div>
-            <div>
-              <Input {...register('details')} placeholder="Details (optional)" />
-              {errors.details && <p className="text-sm text-red-600 mt-1">{errors.details.message}</p>}
-            </div>
-            {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={onSuccess} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Saving...' : 'Save Prayer'}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="w-full max-w-lg">
+      <CardHeader>
+        <CardTitle className="text-center text-3xl">Add a New Prayer</CardTitle>
+        <p className="text-center text-gray-500">What's on your heart today?</p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <Input {...register('title')} placeholder="Prayer Title (e.g., 'For my family')" />
+            {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
+          </div>
+          <div>
+            <Input {...register('details')} placeholder="Details (optional)" />
+            {errors.details && <p className="text-sm text-red-600 mt-1">{errors.details.message}</p>}
+          </div>
+          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => router.push('/home')}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Saving...' : 'Save Prayer'}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
