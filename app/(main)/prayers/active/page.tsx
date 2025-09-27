@@ -24,7 +24,7 @@ export default function ActivePrayersPage() {
       .order('updated_at', { ascending: false })
 
     if (error) {
-      console.error('Error fetching active prayers:', error)
+      console.error('Error fetching active vows:', error)
     } else {
       setPrayers(data)
     }
@@ -49,15 +49,15 @@ export default function ActivePrayersPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <Target className="mx-auto h-12 w-12 text-blue-500 mb-2" />
-          <h1 className="text-4xl font-bold text-foreground mb-2">Active Prayers</h1>
-          <p className="text-muted-foreground">Your current prayer requests.</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Active Vows</h1>
+          <p className="text-muted-foreground">Your Current Commitments</p>
         </div>
 
         {/* Search Bar */}
         <div className="mb-8">
           <Input
             type="text"
-            placeholder="Search active prayers..."
+            placeholder="Search active vows..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full"
@@ -77,7 +77,7 @@ export default function ActivePrayersPage() {
           ) : (
             <div className="text-center bg-card p-6 rounded-lg shadow-card">
               <p className="text-muted-foreground">
-                {searchQuery ? 'No active prayers match your search.' : 'No active prayers yet. Add your first prayer!'}
+                {searchQuery ? 'No active commitments match your search.' : 'No active vows yet. Add your first vow!'}
               </p>
             </div>
           )}

@@ -169,10 +169,10 @@ export default async function HomePage() {
           <h2 className="text-xl font-semibold text-foreground mb-4">What would you like to do?</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-              <Link href="/prayers/add">Add a New Prayer</Link>
+              <Link href="/prayers/add">Add a New Vow</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="flex-1 border-primary text-primary hover:bg-primary/10 transition-colors">
-              <Link href="/prayers/active">View All Prayers</Link>
+              <Link href="/prayers/active">View All Commitments</Link>
             </Button>
           </div>
         </div>

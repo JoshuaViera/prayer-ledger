@@ -35,7 +35,7 @@ export default function AnsweredPrayersPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-12 text-center">
           <Award className="mx-auto h-12 w-12 text-amber-500 mb-2" />
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Answered Prayers</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Completed Commitments</h1>
           <p className="text-gray-600">A journal of God's faithfulness.</p>
         </div>
         <div className="space-y-4">
@@ -50,7 +50,7 @@ export default function AnsweredPrayersPage() {
             ))
           ) : (
             <div className="text-center bg-white p-6 rounded-lg shadow-card">
-              <p className="text-gray-500">You don't have any answered prayers yet.</p>
+              <p className="text-gray-500">You havent completed any vows yet.</p>
             </div>
           )}
         </div>

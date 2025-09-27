@@ -108,7 +108,7 @@ export default async function ProfilePage() {
         <div className="text-center">
           <User className="mx-auto h-12 w-12 text-primary mb-4" />
           <h1 className="text-4xl font-bold text-foreground mb-2">Profile</h1>
-          <p className="text-muted-foreground">Manage your account and view your prayer journey</p>
+          <p className="text-muted-foreground">Manage your account and view your commitment journey</p>
         </div>
 
         {/* Personal Information & Security */}
@@ -120,7 +120,7 @@ export default async function ProfilePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Your Prayer Journey
+                Your commitment Journey
               </CardTitle>
             </CardHeader>
             <CardContent>
