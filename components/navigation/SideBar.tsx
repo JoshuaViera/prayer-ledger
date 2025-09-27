@@ -29,7 +29,7 @@ export function SideBar() {
     <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border shadow-lg z-20 transition-colors">
       <div className="flex items-center justify-center h-20 border-b border-border">
         <BookOpenText className="h-8 w-8 text-primary" />
-        <span className="ml-2 text-2xl font-bold text-foreground">Prayer Ledger</span>
+        <span className="ml-2 text-2xl font-bold text-foreground">Daily Vow</span>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-2">
         {navLinks.map((link) => {
