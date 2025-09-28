@@ -1,35 +1,100 @@
 # Daily Vow 🙏
 
-Daily Vow is a focused web application designed to solve the core problem of prayer disorganization. It provides a centralized and frictionless system to help users maintain a consistent and organized prayer life.
+A focused and peaceful web application for organizing your prayer life and building a consistent habit. Prayer Ledger replaces the chaos of scattered notes with a single, dedicated space for your spiritual journey.
 
-## Project Structure & Quality Assurance
+![Prayer Ledger Demo](https://placehold.co/800x450/f7fafc/718096?text=Your+App+Screenshot+Here)
+*Replace the image link above with a screenshot or, ideally, a GIF of your running application.*
 
-To ensure a high-quality and maintainable codebase, this project was built with the following principles in mind.
+## The Problem It Solves
 
-### Code Structure
-The project follows a clear separation of concerns:
-* **`/app`**: Handles all routing and page layouts, using Next.js App Router conventions. Route groups `(auth)` and `(main)` are used to apply different layouts for authentication and main app views.
-* **`/components`**: Contains all reusable React components. UI primitives (buttons, inputs) are in `/ui`, while feature-specific components (profile forms) are organized into their own folders.
-* **`/lib`**: Holds all utility functions, validation schemas, and the centralized Supabase client for database interactions.
+We all start new, positive habits with great intentions, but keeping them is hard. The problem isn't a lack of desire; it's **friction**. Tracking important personal goals on scattered notes, phone reminders, or just in our heads is disorganized and works against us. This friction is what causes good habits to fail.
 
-### Testing Workflow
-A consistent manual testing process was used to ensure reliability for critical user journeys:
-1.  ✅ **New User Signup:** Create account -> Login -> Logout.
-2.  ✅ **Prayer Management:** Add a new prayer -> Verify it appears on dashboard -> Update status to "answered" -> Verify it moves to the correct view.
-3.  ✅ **Account Security:** Attempt an invalid password change -> Verify error message -> Successfully change password -> Log out and log back in with the new password.
+Prayer Ledger was designed from the ground up to eliminate that friction by providing a simple, beautiful, and dedicated system to focus on what matters.
 
----
+## ✨ Key Features
 
-## Problem & Solution
+* ✅ **Secure User Authentication:** Private and secure user accounts with email & password login.
+* 📊 **Home Dashboard:** An inspiring overview of your prayer journey with key stats like total prayers, answered count, and current streak.
+* ✍️ **Full Prayer Management (CRUD):**
+    * **Create:** Easily add new prayers with titles, details, and categories.
+    * **Read:** View all active and answered prayers in clean, organized lists.
+    * **Update:** Mark prayers as "answered" to celebrate and track your journey.
+    * **Delete:** Remove prayers that are no longer needed.
+* 👤 **Profile Management:** A dedicated page to securely change your password and manage your account.
+* 📱 **Fully Responsive:** A seamless experience on desktop, tablet, and mobile devices.
 
-### The Problem
-The project targets the measurable pain point of **habit-breaking friction** in personal spiritual practices. This friction is caused by disorganized, non-dedicated systems (notes apps, memory). The direct consequence is inconsistent engagement, which can be measured by the frequency and continuity of prayer entries.
+## 🛠️ Tech Stack
 
-### The Solution
-Verity is designed to drastically reduce this friction by providing a specific, structured workflow for prayer management.
+| Category      | Technology                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Frontend** | [Next.js](https://nextjs.org/), [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/) |
+| **Backend** | [Supabase](https://supabase.io/) (PostgreSQL Database, Authentication, RLS)                                 |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/)                                                                    |
+| **Deployment**| [Vercel](https://vercel.com/)                                                                               |
 
-* **Data Inputs:** Users input a `title`, `details`, `category`, and `priority` for each prayer.
-* **Core Logic:** The app provides user-facing analytics on the home dashboard, calculating key metrics like `Total Prayers`, `Answered Count`, and `Current Streak` to motivate continued engagement.
-* **User Journey:** The workflow is seamless: A user logs in, views their dashboard stats, adds a new prayer via a structured form, sees it in their "active" list, and finally updates its status, which automatically moves it to a separate "answered" celebration view.
+## 🏗️ Core Architectural Principles
 
----
+This project was built with a strong focus on professional development practices to ensure it is not only functional but also scalable, maintainable, and accessible.
+
+#### 🎯 Strategic & Focused MVP
+The project began with a deep analysis of the core user problem, leading to a focused Minimum Viable Product (MVP) scope. Every feature was intentionally chosen to solve the primary problem of "user friction" without adding unnecessary complexity.
+
+#### 🧱 Clean & Maintainable Architecture
+The codebase follows a strict **separation of concerns**.
+* **UI Components (`/components`)** are distinct from **Routing & Pages (`/app`)**.
+* **Business Logic & Database interactions (`/lib`)** are centralized, ensuring that the code is easy to read, debug, and scale in the future.
+
+#### ♿ Accessibility as a Core Feature
+Accessibility was not an afterthought. The application was built to be inclusive, following best practices such as:
+* Semantic HTML.
+* Proper use of `<label>` tags for all form inputs.
+* Full keyboard navigability with clear focus indicators.
+
+## 🚀 Live Demo
+
+[**View the live application here!**](https://your-deployment-link.vercel.app)
+*(Replace the link above with your actual Vercel deployment URL.)*
+
+## ⚙️ Getting Started (Local Setup)
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+* Node.js (v18 or later)
+* npm
+
+### Installation
+
+1.  **Clone the repository:**
+    ```sh
+    git clone [https://github.com/your-username/prayer-ledger.git](https://github.com/your-username/prayer-ledger.git)
+    ```
+2.  **Navigate to the project directory:**
+    ```sh
+    cd prayer-ledger
+    ```
+3.  **Install NPM packages:**
+    ```sh
+    npm install
+    ```
+4.  **Set up your environment variables:**
+    * Create a file named `.env.local` in the root of the project.
+    * Add your Supabase Project URL and Anon Key to this file. You can find these in your Supabase project's API settings.
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+    ```
+5.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 👤 Contact
+
+[Your Name] - [your.email@example.com](mailto:your.email@example.com)
+
+Project Link: [https://github.com/your-username/prayer-ledger](https://github.com/your-username/prayer-ledger)
+
+````
