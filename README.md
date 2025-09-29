@@ -2,8 +2,7 @@
 
 A focused and peaceful web application for organizing your prayer life and building a consistent habit. Prayer Ledger replaces the chaos of scattered notes with a single, dedicated space for your spiritual journey.
 
-![Prayer Ledger Demo](https://placehold.co/800x450/f7fafc/718096?text=Your+App+Screenshot+Here)
-*Replace the image link above with a screenshot or, ideally, a GIF of your running application.*
+![Prayer Ledger Demo](./public/demo.gif)
 
 ## The Problem It Solves
 
@@ -52,8 +51,7 @@ Accessibility was not an afterthought. The application was built to be inclusive
 
 ## 🚀 Live Demo
 
-[**View the live application here!**](https://your-deployment-link.vercel.app)
-*(Replace the link above with your actual Vercel deployment URL.)*
+[**View the live application here!**](https://prayer-ledger.vercel.app/login)
 
 ## ⚙️ Getting Started (Local Setup)
 
