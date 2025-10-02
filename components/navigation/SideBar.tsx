@@ -10,9 +10,9 @@ import { useRouter } from 'next/navigation'
 
 const navLinks = [
   { href: '/home', label: 'Home', icon: Home },
-  { href: '/prayers/active', label: 'All Prayers', icon: List },
+  { href: '/prayers/active', label: 'All Commitments', icon: List },
   { href: '/prayers/answered', label: 'Answered', icon: Award },
-  { href: '/prayers/add', label: 'Add Prayer', icon: PlusCircle },
+  { href: '/prayers/add', label: 'Add Vow', icon: PlusCircle },
   { href: '/profile', label: 'Profile', icon: User },
 ]
 

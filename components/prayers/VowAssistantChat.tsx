@@ -32,7 +32,7 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
 
     const userMessage: ChatMessage = { role: 'user', content: input.trim() };
     const updatedMessages = [...messages, userMessage];
-    
+
     setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
@@ -41,12 +41,12 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
     try {
       const response = await chatWithAssistant(updatedMessages);
       const vowData = parseVowFromResponse(response);
-      
+
       if (vowData) {
         onVowComplete({
           title: vowData.title,
           details: vowData.details,
-          category: vowData.category,
+          category: vowData.category as typeof prayerCategories[number],
           priority: vowData.priority
         });
       } else {
@@ -55,8 +55,8 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
     } catch (err) {
       console.error('Chat error:', err);
       setError(
-        err instanceof Error 
-          ? err.message 
+        err instanceof Error
+          ? err.message
           : 'Failed to connect. Please try again.'
       );
     } finally {
@@ -90,11 +90,10 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] rounded-lg px-4 py-3 ${
-                msg.role === 'user'
+              className={`max-w-[85%] rounded-lg px-4 py-3 ${msg.role === 'user'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-foreground border border-border'
-              }`}
+                }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
                 {msg.content}
@@ -102,7 +101,7 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
             </div>
           </div>
         ))}
-        
+
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-muted border border-border rounded-lg px-4 py-3 flex items-center gap-2">
@@ -125,7 +124,7 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 

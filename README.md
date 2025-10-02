@@ -1,8 +1,8 @@
 # Daily Vow 🙏
 
-A focused and peaceful web application for organizing your prayer life and building a consistent habit. Prayer Ledger replaces the chaos of scattered notes with a single, dedicated space for your spiritual journey.
+A focused and peaceful web application for organizing your commitment to life and building a consistent habit. Prayer Ledger replaces the chaos of scattered notes with a single, dedicated space for your spiritual journey.
 
-![Prayer Ledger Demo](./public/demo.gif)
+![Daily Vow Demo](./public/demo.gif)
 
 ## The Problem It Solves
 
@@ -13,7 +13,7 @@ Prayer Ledger was designed from the ground up to eliminate that friction by prov
 ## ✨ Key Features
 
 * ✅ **Secure User Authentication:** Private and secure user accounts with email & password login.
-* 📊 **Home Dashboard:** An inspiring overview of your prayer journey with key stats like total prayers, answered count, and current streak.
+* 📊 **Home Dashboard:** An inspiring overview of your prayer journey with key stats like total commitments, answered count, and current streak.
 * ✍️ **Full Prayer Management (CRUD):**
     * **Create:** Easily add new prayers with titles, details, and categories.
     * **Read:** View all active and answered prayers in clean, organized lists.

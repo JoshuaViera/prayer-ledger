@@ -11,7 +11,7 @@ export interface ChatMessage {
 export interface VowData {
   title: string;
   details: string;
-  category: typeof prayerCategories[number]; // This makes it match exactly
+  category: typeof prayerCategories[number];
   priority: 'low' | 'medium' | 'high';
 }
 
@@ -19,6 +19,6 @@ export interface VowCompleteResponse {
   type: 'vow_complete';
   title: string;
   details: string;
-  category: string; // Keep as string for AI response
+  category: string;
   priority: 'low' | 'medium' | 'high';
 }

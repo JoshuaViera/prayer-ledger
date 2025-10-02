@@ -139,11 +139,11 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <StatCard icon={<BarChart size={28} />} title="Total Prayers" value={stats.total} />
+          <StatCard icon={<BarChart size={28} />} title="Total Commitments" value={stats.total} />
           <StatCard icon={<CheckCircle2 size={28} />} title="Answered" value={stats.answered} />
           <StatCard icon={<Target size={28} />} title="Active Requests" value={stats.active} />
-          <StatCard icon={<HeartHandshake size={28} />} title="Days in Prayer" value={stats.journeyDays} />
-          <StatCard icon={<Flame size={28} />} title="Prayer Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
+          <StatCard icon={<HeartHandshake size={28} />} title="Consistency Tracker" value={stats.journeyDays} />
+          <StatCard icon={<Flame size={28} />} title="Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
         </div>
         
         {earnedAchievements.length > 0 && (
