@@ -91,7 +91,7 @@ To get a local copy up and running, follow these simple steps.
 
 ## 👤 Contact
 
-Joshua Viera - [joshuaviera95@gmail.com)](joshuaviera95@gmail.com)
+Joshua Viera - [joshuaviera95@gmail.com](joshuaviera95@gmail.com)
 
 Project Link: [https://github.com/JoshuaViera/prayer-ledger](https://github.com/JoshuaViera/prayer-ledger)
 

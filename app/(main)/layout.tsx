@@ -1,3 +1,5 @@
+// app/(main)/layout.tsx
+
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SideBar } from '@/components/navigation/SideBar'

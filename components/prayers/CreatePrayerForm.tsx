@@ -1,7 +1,6 @@
-// File: components/prayers/CreatePrayerForm.tsx
-
 'use client'
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
@@ -10,9 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { prayerSchema, prayerCategories, type PrayerFormData } from '@/lib/validations'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { useState } from 'react'
+import { VowAssistantChat } from '@/components/prayers/VowAssistantChat';
+import { VowData } from '@/types/chat';
+import { Sparkles, PenLine } from 'lucide-react';
 
 export function CreatePrayerForm() {
+  const [mode, setMode] = useState<'manual' | 'assistant'>('manual');
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -21,19 +23,28 @@ export function CreatePrayerForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<PrayerFormData>({
     resolver: zodResolver(prayerSchema),
     defaultValues: {
-      category: 'General', // Set a default value for the dropdown
+      category: 'General',
     },
   })
+
+  const handleVowComplete = (vowData: VowData) => {
+    setValue('title', vowData.title);
+    setValue('details', vowData.details || '');
+    setValue('category', vowData.category);
+    setMode('manual');
+  };
 
   const onSubmit = async (data: PrayerFormData) => {
     setIsLoading(true)
     setError(null)
-    
+
     const { data: { user } } = await supabase.auth.getUser()
+
     if (!user) {
       setError('You must be logged in to create a prayer request.')
       setIsLoading(false)
@@ -44,7 +55,9 @@ export function CreatePrayerForm() {
       title: data.title,
       details: data.details,
       user_id: user.id,
-      category: data.category, // Include the category in the data we send
+      category: data.category,
+      priority: 'medium',
+      status: 'active'
     })
 
     if (insertError) {
@@ -59,50 +72,72 @@ export function CreatePrayerForm() {
   return (
     <Card className="w-full max-w-lg">
       <CardHeader>
-        <CardTitle className="text-center text-3xl">Add a New Prayer</CardTitle>
-        <p className="text-center text-gray-500">What's on your heart today?</p>
+        <CardTitle className="text-center text-3xl">Add a New Vow</CardTitle>
+        <p className="text-center text-muted-foreground">What's on your heart today?</p>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <Input {...register('title')} placeholder="Prayer Title (e.g., 'For my family')" />
-            {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
-          </div>
-          <div>
-            <Input {...register('details')} placeholder="Details (optional)" />
-            {errors.details && <p className="text-sm text-red-600 mt-1">{errors.details.message}</p>}
-          </div>
+        <div className="flex gap-2 mb-6 p-1 bg-muted rounded-lg">
+          <Button
+            type="button"
+            variant={mode === 'manual' ? 'default' : 'ghost'}
+            className="flex-1"
+            onClick={() => setMode('manual')}
+          >
+            <PenLine className="h-4 w-4 mr-2" />
+            Manual Entry
+          </Button>
+          <Button
+            type="button"
+            variant={mode === 'assistant' ? 'default' : 'ghost'}
+            className="flex-1"
+            onClick={() => setMode('assistant')}
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            AI Assistant
+          </Button>
+        </div>
 
-          {/* New Category Dropdown */}
-          <div>
-            <select
-              {...register('category')}
-              className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-            >
-              {prayerCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            {errors.category && <p className="text-sm text-red-600 mt-1">{errors.category.message}</p>}
-          </div>
-
-          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => router.push('/home')}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Saving...' : 'Save Prayer'}
-            </Button>
-          </div>
-        </form>
+        {mode === 'assistant' ? (
+          <VowAssistantChat onVowComplete={handleVowComplete} />
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Input {...register('title')} placeholder="Prayer Title (e.g., 'For my family')" />
+              {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
+            </div>
+            <div>
+              <Input {...register('details')} placeholder="Details (optional)" />
+              {errors.details && <p className="text-sm text-red-600 mt-1">{errors.details.message}</p>}
+            </div>
+            <div>
+              <select
+                {...register('category')}
+                className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+              >
+                {prayerCategories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              {errors.category && <p className="text-sm text-red-600 mt-1">{errors.category.message}</p>}
+            </div>
+            {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => router.push('/home')}
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Saving...' : 'Save Prayer'}
+              </Button>
+            </div>
+          </form>
+        )}
       </CardContent>
     </Card>
   )

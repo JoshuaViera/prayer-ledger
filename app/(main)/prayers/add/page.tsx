@@ -1,3 +1,5 @@
+// app/(main)/prayers/add/page.tsx
+
 import { CreatePrayerForm } from "@/components/prayers/CreatePrayerForm";
 
 export default function AddPrayerPage() {

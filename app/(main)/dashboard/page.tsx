@@ -1,4 +1,4 @@
-// File: /app/(main)/dashboard/page.tsx
+//  /app/(main)/dashboard/page.tsx
 
 import { redirect } from 'next/navigation'
 

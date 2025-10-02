@@ -1,4 +1,4 @@
-// File: lib/validations.ts
+// lib/validations.ts
 
 import { z } from 'zod'
 

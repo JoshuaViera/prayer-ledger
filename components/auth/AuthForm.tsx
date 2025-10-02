@@ -1,5 +1,5 @@
 
-// File: components/auth/AuthForm.tsx
+// components/auth/AuthForm.tsx
 
 'use client'
 
