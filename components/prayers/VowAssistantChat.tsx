@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { chatWithAssistant, parseVowFromResponse } from '@/lib/gemini';
 import { ChatMessage, VowData } from '@/types/chat';
 import { Loader2, Send, Sparkles } from 'lucide-react';
+import { prayerCategories } from '@/lib/validations';
 
 interface VowAssistantChatProps {
   onVowComplete: (vow: VowData) => void;
