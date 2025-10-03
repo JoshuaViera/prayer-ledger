@@ -5,45 +5,70 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Database } from '@/lib/database.types'
 import { Button } from '../ui/button'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { Trash2, Tag, Star, Share2, Check } from 'lucide-react'
+import { Trash2, Tag, Star, Share2, Check, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { checkInToday, getCheckInStats, type CheckInStats } from '@/lib/check-ins'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
-// Updated category border colors for maximum visibility
 const categoryStyles: { [key: string]: string } = {
-  'Personal Growth': 'border-l-pink-400',        // Hot pink
-  'Family & Relationships': 'border-l-cyan-400',  // Bright cyan
-  'Health & Healing': 'border-l-emerald-400',     // Bright emerald
-  'Career & Finances': 'border-l-blue-400',       // Bright blue
-  'World Events': 'border-l-purple-400',          // Bright purple
-  'Church Community': 'border-l-yellow-400',      // Bright yellow
-  'General': 'border-l-orange-400',               // Bright orange
+  'Personal Growth': 'border-l-pink-400',
+  'Family & Relationships': 'border-l-cyan-400',
+  'Health & Healing': 'border-l-emerald-400',
+  'Career & Finances': 'border-l-blue-400',
+  'World Events': 'border-l-purple-400',
+  'Church Community': 'border-l-yellow-400',
+  'General': 'border-l-orange-400',
 }
 
-// Updated priority badge colors - much more distinct
 const priorityStyles: { [key: string]: string } = {
-  'High': 'bg-red-500 text-white shadow-lg',      // Bright red with shadow
-  'Medium': 'bg-yellow-500 text-black shadow-lg', // Bright yellow with black text
-  'Low': 'bg-green-500 text-white shadow-lg',     // Bright green with shadow
+  'high': 'bg-red-500 text-white shadow-lg',
+  'medium': 'bg-yellow-500 text-black shadow-lg',
+  'low': 'bg-green-500 text-white shadow-lg',
 }
 
 interface PrayerCardProps {
   prayer: Prayer
   onUpdate?: () => void
-  onPrayerAnswered?: () => void // Keep for confetti trigger
+  onPrayerAnswered?: () => void
 }
 
 export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardProps) {
   const supabase = createSupabaseBrowserClient()
   const router = useRouter()
   const [isCopied, setIsCopied] = useState(false)
+  const [isCheckingIn, setIsCheckingIn] = useState(false)
+  const [checkInStats, setCheckInStats] = useState<CheckInStats>({
+    totalCheckIns: 0,
+    currentStreak: 0,
+    lastCheckIn: null,
+    hasCheckedInToday: false,
+  })
+
+  useEffect(() => {
+    loadCheckInStats()
+  }, [prayer.id])
+
+  const loadCheckInStats = async () => {
+    const stats = await getCheckInStats(prayer.id)
+    setCheckInStats(stats)
+  }
 
   const refreshData = () => {
     if (onUpdate) onUpdate()
     else router.refresh()
+  }
+
+  const handleCheckIn = async () => {
+    setIsCheckingIn(true)
+    const success = await checkInToday(prayer.id)
+    if (success) {
+      await loadCheckInStats()
+      refreshData()
+    }
+    setIsCheckingIn(false)
   }
 
   const handleShare = async () => {
@@ -97,25 +122,36 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
   }
 
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
-  const priorityColorClass = priorityStyles[prayer.priority] || priorityStyles['Medium']
+  const priorityColorClass = priorityStyles[prayer.priority.toLowerCase()] || priorityStyles['medium']
 
   return (
-    // Card with much more distinct styling
     <Card className={cn('border-2 border-border border-l-8 shadow-xl hover:shadow-2xl transition-all duration-300 bg-card backdrop-blur-sm', borderColorClass)}>
       <CardHeader className="flex flex-row justify-between items-start bg-gradient-to-r from-card/50 to-secondary/30 rounded-t-lg">
-        <div>
+        <div className="flex-1">
           <CardTitle className="text-foreground text-xl font-bold drop-shadow-sm">{prayer.title}</CardTitle>
           {prayer.details && (
             <p className="text-card-foreground/80 text-sm mt-2 bg-muted/30 p-2 rounded">{prayer.details}</p>
           )}
+          
+          {checkInStats.currentStreak > 0 && (
+            <div className="mt-3 flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-primary">{checkInStats.currentStreak} day streak</span>
+              </div>
+              <span className="text-muted-foreground">
+                {checkInStats.totalCheckIns} total check-ins
+              </span>
+            </div>
+          )}
         </div>
+        
         <div className="flex flex-col items-end gap-2">
-          {/* Status badge colors - much brighter and more distinct */}
           <span
             className={`px-3 py-1 text-xs font-bold rounded-full shadow-md ${
               prayer.status === 'active'
-                ? 'bg-blue-500 text-white border border-blue-300' // Bright blue for active
-                : 'bg-emerald-500 text-white border border-emerald-300' // Bright emerald for answered
+                ? 'bg-blue-500 text-white border border-blue-300'
+                : 'bg-emerald-500 text-white border border-emerald-300'
             }`}
           >
             {prayer.status}
@@ -125,14 +161,42 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
           </span>
         </div>
       </CardHeader>
+      
       <CardContent className="bg-card/80">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-wrap gap-2">
           <div className="flex items-center gap-2 text-sm bg-accent/20 px-3 py-1 rounded-full">
             <Tag className="h-4 w-4 text-accent-foreground" />
             <span className="text-accent-foreground font-medium">{prayer.category}</span>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Share Button - bright with distinct hover */}
+          
+          <div className="flex items-center gap-2 flex-wrap">
+            {prayer.status === 'active' && (
+              <Button
+                variant={checkInStats.hasCheckedInToday ? "outline" : "default"}
+                size="sm"
+                onClick={handleCheckIn}
+                disabled={checkInStats.hasCheckedInToday || isCheckingIn}
+                className={cn(
+                  "transition-all",
+                  checkInStats.hasCheckedInToday 
+                    ? "border-emerald-400 text-emerald-400 cursor-default" 
+                    : "bg-primary hover:bg-primary/90"
+                )}
+              >
+                {checkInStats.hasCheckedInToday ? (
+                  <>
+                    <Check className="h-4 w-4 mr-1" />
+                    Checked In
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="h-4 w-4 mr-1" />
+                    {isCheckingIn ? 'Checking In...' : 'Check In Today'}
+                  </>
+                )}
+              </Button>
+            )}
+            
             <Button variant="ghost" size="icon" onClick={handleShare} className="hover:bg-cyan-500/20 text-cyan-400 hover:text-cyan-300 border border-transparent hover:border-cyan-500/50">
               {isCopied ? (
                 <Check className="h-4 w-4 text-emerald-400" />
@@ -140,16 +204,16 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
                 <Share2 className="h-4 w-4" />
               )}
             </Button>
-            {/* Favorite Button - gold/yellow theme */}
+            
             <Button variant="ghost" size="icon" onClick={handleToggleFavorite} className="hover:bg-yellow-500/20 text-yellow-400 hover:text-yellow-300 border border-transparent hover:border-yellow-500/50">
               <Star className={cn("h-5 w-5", prayer.is_favorited ? 'fill-yellow-400 text-yellow-400' : 'text-yellow-400')} />
             </Button>
-            {/* Delete Button - red theme */}
+            
             <Button variant="ghost" size="icon" onClick={handleDelete} className="hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-transparent hover:border-red-500/50">
               <Trash2 className="h-4 w-4" />
             </Button>
+            
             {prayer.status === 'active' && (
-              // Mark as Answered Button - bright green theme
               <Button variant="outline" size="sm" onClick={handleUpdateStatus} className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-black font-medium shadow-md">
                 Mark as Answered
               </Button>

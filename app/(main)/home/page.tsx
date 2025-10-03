@@ -3,18 +3,17 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
-import { Award, BarChart, CheckCircle2, Flame, HeartHandshake, Lightbulb, ShieldCheck, Target } from 'lucide-react'
+import { Award, BarChart, CheckCircle2, Flame, HeartHandshake, Lightbulb, ShieldCheck, Target, CalendarCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
 
-// --- New: Define types for better type safety ---
 interface Achievement {
   id: string;
   title: string;
   description: string;
-  icon: React.ElementType; // Use React.ElementType for component types
-  isUnlocked: (stats: Stats) => boolean; // isUnlocked now expects Stats type
+  icon: React.ElementType;
+  isUnlocked: (stats: Stats) => boolean;
 }
 
 interface Stats {
@@ -24,9 +23,9 @@ interface Stats {
   firstPrayerDate: Date | null;
   journeyDays: number;
   streak: number;
+  weeklyCheckIns: number;
 }
 
-// --- Explicitly type prayerPrompts as string[] ---
 const prayerPrompts: string[] = [
   "What are you most grateful for today?",
   "Who is someone you can pray for this week?",
@@ -37,14 +36,12 @@ const prayerPrompts: string[] = [
   "What area of your life needs healing or peace?"
 ];
 
-// --- Type achievements with the new Achievement interface ---
 const achievements: Achievement[] = [
   { id: 'streak_7', title: 'Week of Faith', description: 'Maintained a 7-day prayer streak!', icon: Flame, isUnlocked: (stats) => stats.streak >= 7 },
   { id: 'answered_1', title: 'First Testimony', description: 'You marked your first prayer as answered!', icon: Award, isUnlocked: (stats) => stats.answered >= 1 },
   { id: 'answered_10', title: 'Faithful Follower', description: 'You have 10 answered prayers!', icon: ShieldCheck, isUnlocked: (stats) => stats.answered >= 10 },
 ];
 
-// --- Explicitly type return of checkAchievements ---
 function checkAchievements(stats: Stats): Achievement[] {
   return achievements.filter(ach => ach.isUnlocked(stats));
 }
@@ -71,22 +68,20 @@ function calculateStreak(prayers: Prayer[]): number {
   return streak;
 }
 
-// --- Explicitly type return of calculateStats ---
-function calculateStats(prayers: Prayer[]): Stats {
+async function calculateStats(prayers: Prayer[]): Promise<Stats> {
   if (!prayers || prayers.length === 0) {
-    return { total: 0, answered: 0, active: 0, firstPrayerDate: null, journeyDays: 0, streak: 0 }
+    return { total: 0, answered: 0, active: 0, firstPrayerDate: null, journeyDays: 0, streak: 0, weeklyCheckIns: 0 }
   }
   const answered = prayers.filter((p) => p.status === 'answered').length
   const active = prayers.length - answered
   
-  // Find the oldest prayer date
   const oldestPrayer = prayers.reduce((oldest, p) => {
     const currentDate = new Date(p.created_at);
     if (!oldest || currentDate < oldest) {
       return currentDate;
     }
     return oldest;
-  }, null as Date | null); // Initialize with null, then type as Date | null
+  }, null as Date | null);
 
   const firstPrayerDate = oldestPrayer;
   const journeyDays = firstPrayerDate 
@@ -95,7 +90,24 @@ function calculateStats(prayers: Prayer[]): Stats {
 
   const streak = calculateStreak(prayers);
 
-  return { total: prayers.length, answered, active, firstPrayerDate, journeyDays, streak }
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  let weeklyCheckIns = 0
+  if (user) {
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    
+    const { data: checkIns } = await supabase
+      .from('check_ins')
+      .select('id')
+      .eq('user_id', user.id)
+      .gte('checked_in_at', oneWeekAgo.toISOString())
+    
+    weeklyCheckIns = checkIns?.length ?? 0
+  }
+
+  return { total: prayers.length, answered, active, firstPrayerDate, journeyDays, streak, weeklyCheckIns }
 }
 
 function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string; value: string | number }) {
@@ -109,14 +121,13 @@ function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string
 }
 
 export default async function HomePage() {
-  const supabase = await createSupabaseServerClient() // Added await here!
+  const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) { redirect('/login') }
 
   const { data: prayers } = await supabase.from('prayers').select('*').order('created_at', { ascending: false })
   
-  // Ensure stats is not null before passing to checkAchievements
-  const stats = calculateStats(prayers || [])
+  const stats = await calculateStats(prayers || [])
   const earnedAchievements = checkAchievements(stats);
 
   const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
@@ -138,12 +149,13 @@ export default async function HomePage() {
           <p className="text-md font-semibold mt-2 text-indigo-200">- {verse.reference}</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <StatCard icon={<BarChart size={28} />} title="Total Commitments" value={stats.total} />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          <StatCard icon={<BarChart size={28} />} title="Total Prayers" value={stats.total} />
           <StatCard icon={<CheckCircle2 size={28} />} title="Answered" value={stats.answered} />
           <StatCard icon={<Target size={28} />} title="Active Requests" value={stats.active} />
-          <StatCard icon={<HeartHandshake size={28} />} title="Consistency Tracker" value={stats.journeyDays} />
-          <StatCard icon={<Flame size={28} />} title="Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
+          <StatCard icon={<HeartHandshake size={28} />} title="Days in Prayer" value={stats.journeyDays} />
+          <StatCard icon={<Flame size={28} />} title="Prayer Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
+          <StatCard icon={<CalendarCheck size={28} />} title="Check-ins This Week" value={stats.weeklyCheckIns} />
         </div>
         
         {earnedAchievements.length > 0 && (

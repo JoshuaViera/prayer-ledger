@@ -1,4 +1,3 @@
-// lib/database.types.ts
 export type Json =
   | string
   | number
@@ -15,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      check_ins: {
+        Row: {
+          checked_in_at: string | null
+          created_at: string | null
+          id: string
+          user_id: string
+          vow_id: string
+        }
+        Insert: {
+          checked_in_at?: string | null
+          created_at?: string | null
+          id?: string
+          user_id: string
+          vow_id: string
+        }
+        Update: {
+          checked_in_at?: string | null
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          vow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "check_ins_vow_id_fkey"
+            columns: ["vow_id"]
+            isOneToOne: false
+            referencedRelation: "prayers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prayers: {
         Row: {
           category: string
