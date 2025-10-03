@@ -2,8 +2,6 @@
 
 Daily Vow is a focused and peaceful web application for organizing your commitment to life and building consistent habits with the help of an **AI-powered assistant** and **daily progress tracking**. It replaces the chaos of scattered notes with a single, dedicated space for your personal and spiritual journey.
 
-![Daily Vow Demo](./public/demo.gif)
-
 ## The Problem It Solves
 
 We all start new, positive habits with great intentions, but keeping them is hard. The problem isn't a lack of desire; it's **friction**. Tracking important personal goals on scattered notes, phone reminders, or just in our heads is disorganized and works against us. This friction is what causes good habits to fail.
@@ -53,7 +51,7 @@ This project was built with a strong focus on professional development practices
 
 ## 🚀 Live Demo
 
-View the live application here\!
+![Daily Vow Demo](./public/demo.gif)
 
 ## ⚙️ Getting Started (Local Setup)
 
