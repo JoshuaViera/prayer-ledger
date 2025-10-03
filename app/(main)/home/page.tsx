@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
-import { Award, BarChart, CheckCircle2, Flame, HeartHandshake, Lightbulb, ShieldCheck, Target, CalendarCheck } from 'lucide-react'
+import { Award, CheckCircle2, Flame, Lightbulb, ShieldCheck, Target, CalendarCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type Prayer = Database['public']['Tables']['prayers']['Row']
@@ -149,13 +149,11 @@ export default async function HomePage() {
           <p className="text-md font-semibold mt-2 text-indigo-200">- {verse.reference}</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <StatCard icon={<BarChart size={28} />} title="Total Prayers" value={stats.total} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StatCard icon={<Target size={28} />} title="Active Vows" value={stats.active} />
           <StatCard icon={<CheckCircle2 size={28} />} title="Answered" value={stats.answered} />
-          <StatCard icon={<Target size={28} />} title="Active Requests" value={stats.active} />
-          <StatCard icon={<HeartHandshake size={28} />} title="Days in Prayer" value={stats.journeyDays} />
-          <StatCard icon={<Flame size={28} />} title="Prayer Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
           <StatCard icon={<CalendarCheck size={28} />} title="Check-ins This Week" value={stats.weeklyCheckIns} />
+          <StatCard icon={<Flame size={28} />} title="Current Streak" value={`${stats.streak} Day${stats.streak === 1 ? '' : 's'}`} />
         </div>
         
         {earnedAchievements.length > 0 && (
