@@ -1,4 +1,3 @@
-// components/prayers/prayerCard.tsx
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,12 +20,6 @@ const categoryStyles: { [key: string]: string } = {
   'World Events': 'border-l-purple-400',
   'Church Community': 'border-l-yellow-400',
   'General': 'border-l-orange-400',
-}
-
-const priorityStyles: { [key: string]: string } = {
-  'high': 'bg-red-500 text-white shadow-lg',
-  'medium': 'bg-yellow-500 text-black shadow-lg',
-  'low': 'bg-green-500 text-white shadow-lg',
 }
 
 interface PrayerCardProps {
@@ -87,7 +80,7 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
       .from('prayers')
       .update({ status: 'answered' })
       .eq('id', prayer.id)
-    
+
     if (error) {
       console.error('Error updating prayer status:', error)
     } else {
@@ -113,7 +106,7 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
       .from('prayers')
       .update({ is_favorited: !prayer.is_favorited })
       .eq('id', prayer.id)
-    
+
     if (error) {
       console.error('Error updating favorite status:', error)
     } else {
@@ -122,7 +115,6 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
   }
 
   const borderColorClass = categoryStyles[prayer.category] || categoryStyles['General']
-  const priorityColorClass = priorityStyles[prayer.priority.toLowerCase()] || priorityStyles['medium']
 
   return (
     <Card className={cn('border-2 border-border border-l-8 shadow-xl hover:shadow-2xl transition-all duration-300 bg-card backdrop-blur-sm', borderColorClass)}>
@@ -132,7 +124,7 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
           {prayer.details && (
             <p className="text-card-foreground/80 text-sm mt-2 bg-muted/30 p-2 rounded">{prayer.details}</p>
           )}
-          
+
           {checkInStats.currentStreak > 0 && (
             <div className="mt-3 flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full">
@@ -145,7 +137,7 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
             </div>
           )}
         </div>
-        
+
         <div className="flex flex-col items-end gap-2">
           <span
             className={`px-3 py-1 text-xs font-bold rounded-full shadow-md ${
@@ -156,19 +148,17 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
           >
             {prayer.status}
           </span>
-          <span className={`px-3 py-1 text-xs font-bold rounded-full shadow-md ${priorityColorClass}`}>
-            {prayer.priority} Priority
-          </span>
+          {/* The Priority badge has been removed from here. */}
         </div>
       </CardHeader>
-      
+
       <CardContent className="bg-card/80">
         <div className="flex justify-between items-center flex-wrap gap-2">
           <div className="flex items-center gap-2 text-sm bg-accent/20 px-3 py-1 rounded-full">
             <Tag className="h-4 w-4 text-accent-foreground" />
             <span className="text-accent-foreground font-medium">{prayer.category}</span>
           </div>
-          
+
           <div className="flex items-center gap-2 flex-wrap">
             {prayer.status === 'active' && (
               <Button
@@ -178,9 +168,9 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
                 disabled={checkInStats.hasCheckedInToday || isCheckingIn}
                 className={cn(
                   "transition-all",
-                  checkInStats.hasCheckedInToday 
-                    ? "border-emerald-400 text-emerald-400 cursor-default" 
-                    : "bg-primary hover:bg-primary/90"
+                  checkInStats.hasCheckedInToday
+                     ? "border-emerald-400 text-emerald-400 cursor-default"
+                     : "bg-primary hover:bg-primary/90"
                 )}
               >
                 {checkInStats.hasCheckedInToday ? (
@@ -196,7 +186,7 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
                 )}
               </Button>
             )}
-            
+
             <Button variant="ghost" size="icon" onClick={handleShare} className="hover:bg-cyan-500/20 text-cyan-400 hover:text-cyan-300 border border-transparent hover:border-cyan-500/50">
               {isCopied ? (
                 <Check className="h-4 w-4 text-emerald-400" />
@@ -204,15 +194,15 @@ export function PrayerCard({ prayer, onUpdate, onPrayerAnswered }: PrayerCardPro
                 <Share2 className="h-4 w-4" />
               )}
             </Button>
-            
+
             <Button variant="ghost" size="icon" onClick={handleToggleFavorite} className="hover:bg-yellow-500/20 text-yellow-400 hover:text-yellow-300 border border-transparent hover:border-yellow-500/50">
               <Star className={cn("h-5 w-5", prayer.is_favorited ? 'fill-yellow-400 text-yellow-400' : 'text-yellow-400')} />
             </Button>
-            
+
             <Button variant="ghost" size="icon" onClick={handleDelete} className="hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-transparent hover:border-red-500/50">
               <Trash2 className="h-4 w-4" />
             </Button>
-            
+
             {prayer.status === 'active' && (
               <Button variant="outline" size="sm" onClick={handleUpdateStatus} className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-black font-medium shadow-md">
                 Mark as Answered

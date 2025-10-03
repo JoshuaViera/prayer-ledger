@@ -1,3 +1,4 @@
+// components/prayers/VowAssistantChat.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { chatWithAssistant, parseVowFromResponse } from '@/lib/gemini';
 import { ChatMessage, VowData } from '@/types/chat';
 import { Loader2, Send, Sparkles } from 'lucide-react';
-import { prayerCategories } from '@/lib/validations';
+import { prayerCategories } from '@/lib/validations'; // Make sure this import exists
 
 interface VowAssistantChatProps {
   onVowComplete: (vow: VowData) => void;
@@ -30,10 +31,9 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
-
     const userMessage: ChatMessage = { role: 'user', content: input.trim() };
     const updatedMessages = [...messages, userMessage];
-
+    
     setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
@@ -42,13 +42,14 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
     try {
       const response = await chatWithAssistant(updatedMessages);
       const vowData = parseVowFromResponse(response);
-
+      
       if (vowData) {
+        // --- THIS IS THE FIX ---
+        // The 'priority' line has been removed from this object.
         onVowComplete({
           title: vowData.title,
           details: vowData.details,
           category: vowData.category as typeof prayerCategories[number],
-          priority: vowData.priority
         });
       } else {
         setMessages([...updatedMessages, { role: 'assistant', content: response }]);
@@ -57,8 +58,8 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
       console.error('Chat error:', err);
       setError(
         err instanceof Error
-          ? err.message
-          : 'Failed to connect. Please try again.'
+           ? err.message
+           : 'Failed to connect. Please try again.'
       );
     } finally {
       setIsLoading(false);
@@ -83,7 +84,6 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
           Let's clarify your commitment together
         </p>
       </div>
-
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, idx) => (
           <div
@@ -91,10 +91,11 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] rounded-lg px-4 py-3 ${msg.role === 'user'
+              className={`max-w-[85%] rounded-lg px-4 py-3 ${
+                msg.role === 'user'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-foreground border border-border'
-                }`}
+              }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
                 {msg.content}
@@ -102,7 +103,7 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
             </div>
           </div>
         ))}
-
+                
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-muted border border-border rounded-lg px-4 py-3 flex items-center gap-2">
@@ -125,7 +126,7 @@ export function VowAssistantChat({ onVowComplete }: VowAssistantChatProps) {
             </div>
           </div>
         )}
-
+                
         <div ref={messagesEndRef} />
       </div>
 

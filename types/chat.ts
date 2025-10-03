@@ -1,4 +1,3 @@
-// types/chat.ts
 import { prayerCategories } from '@/lib/validations';
 
 export type MessageRole = 'user' | 'assistant';
@@ -12,7 +11,6 @@ export interface VowData {
   title: string;
   details: string;
   category: typeof prayerCategories[number];
-  priority: 'low' | 'medium' | 'high';
 }
 
 export interface VowCompleteResponse {
@@ -20,5 +18,4 @@ export interface VowCompleteResponse {
   title: string;
   details: string;
   category: string;
-  priority: 'low' | 'medium' | 'high';
 }

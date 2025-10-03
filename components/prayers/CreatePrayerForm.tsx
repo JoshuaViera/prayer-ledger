@@ -35,7 +35,7 @@ export function CreatePrayerForm() {
   const handleVowComplete = (vowData: VowData) => {
     setValue('title', vowData.title);
     setValue('details', vowData.details || '');
-    setValue('category', vowData.category);
+    setValue('category', vowData.category as typeof prayerCategories[number]);
     setMode('manual');
   };
 
@@ -56,7 +56,7 @@ export function CreatePrayerForm() {
       details: data.details,
       user_id: user.id,
       category: data.category,
-      priority: 'medium',
+      // The 'priority' field has been removed from the data sent to the database.
       status: 'active'
     })
 
